@@ -1,0 +1,19 @@
+{
+    "problem":"test",
+    "properties" : 
+    {
+        "dim" : "1000"
+    }
+    ,
+    "solver":"proposed",
+    "params":
+    {
+        "lr" : "1e-4",
+        "reduced_dim":"100",
+        "mu": "1e-8",
+        "sample_size" : "10",
+        "step_schedule" : "constant"
+    },
+    "iterations":"100",
+    "interval":"10"
+}

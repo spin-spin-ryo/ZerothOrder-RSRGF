@@ -22,7 +22,7 @@ class QuadraticFunction(Function):
   def __call__(self,x):
     Q = self.params[0]
     b = self.params[1]
-    return 1/2*Q@x@x+b@x
+    return 1/2*(Q@x)@x+b@x
 
 class CNN_func(Function):
     def __init__(self, params):
@@ -78,3 +78,4 @@ class CNN_func(Function):
       z = z.view(z.size(0), -1)
       z = F.linear(z, W, bias=b)
       return torch.argmax(z,dim = 1)
+

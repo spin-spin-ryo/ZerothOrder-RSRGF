@@ -1,123 +1,56 @@
 import torch
 import os
-from torch.autograd.functional import hessian
-from torch.utils.data import TensorDataset, DataLoader
-from function import CNN_func
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import json
+from environments import *
+from generate_problem import generate
+from get_solver import get_solver
 
-if torch.cuda.is_available():
-  device = "cuda"
-else:
-  device = "cpu"
+config_name = "config.json"
 
-print(device)
+if not os.path.exists(os.path.join(CONFIGPATH,config_name)):
+  raise ValueError("No config")
 
-DATAPATH = "./data"
-data = torch.load(os.path.join(DATAPATH,"CNN","images.pth"))
-label = torch.load(os.path.join(DATAPATH,"CNN","labels.pth"))
+with open(os.path.join(CONFIGPATH,config_name)) as f:
+  config = json.load(f)
 
-dtype = torch.float64
-torch.cuda.empty_cache()
+problem = config["problem"]
+properties = config["properties"]
+solver_name = config["solver"]
+params_json = config["params"]
 
-dataset = TensorDataset(data,label)
-batch_size = 4000
-dataloader = DataLoader(dataset,batch_size = batch_size,shuffle = True)
 
-class subspace_f:
-  def __init__(self,func):
-    self.x = None
-    self.P = None
-    self.func = func
-  
-  def set(self,x,P):
-    self.x = x
-    self.P = P
-  
-  def __call__(self,d):
-    return self.func(self.x + self.P@d)
-  
-def GetMinimumEig(H):
-  eigenvalues = torch.linalg.eigvalsh(H)
-  minimum_eigenvalue = eigenvalues[0].item()
-  return minimum_eigenvalue
+func,x0 = generate(mode = problem,properties = properties)
 
-def compute_min_eigen(matrix):
-    # Calculate eigenvalues and eigenvectors
-    eigenvalues, eigenvectors = torch.linalg.eigh(matrix)
+solver,params = get_solver(solver_name=solver_name,params_json=params_json)
+solver.device = DEVICE
+solver.dtype = DTYPE
 
-    # Find the index of the minimum eigenvalue
-    min_eigenvalue_index = torch.argmin(eigenvalues)
-    min_eigenvalue = eigenvalues[min_eigenvalue_index].item()
+iterations = int(config["iterations"])
+interval = int(config["interval"])
 
-    # Retrieve the corresponding eigenvector
-    min_eigenvector = eigenvectors[:, min_eigenvalue_index]
+func.SetDevice(DEVICE)
+func.SetDtype(DTYPE)
 
-    return min_eigenvalue, min_eigenvector
+x0 = x0.to(DTYPE).to(DEVICE)
+problem_dir = ""
+solver_dir = ""
+for k,v in properties.items():
+  problem_dir += k + ":" + v + "_"
 
-  
-dim = 33738
-reduced_dim = 10
-params_f = [data[:40000].to(device),label[:40000].to(device)]
-f = CNN_func(params=params_f)
-obj = subspace_f(f)
-x = torch.load(os.path.join(DATAPATH,"CNN","init_param.pth")).to(device)
-c1 = 1.5
-c2 = 0.1
-t = 1
-alpha = 0.3
-beta = 0.8
-epoch_num = 2000
-losses = []
-total_time = 0
-init_lr = 10
-for epoch in range(epoch_num):
-  P = torch.randn(dim,reduced_dim)/(dim**(0.5))
-  P = P.to(device)
-  total_loss = 0
-  start_epoch = time.time()
-  y = x.clone().detach().to(device)
-  y.requires_grad_(True)
-  loss = f(y)
-  loss.backward()
+for k,v in params_json.items():
+  solver_dir += k + ":" + v + "_"
 
-  print(f"Norm:{torch.linalg.norm(y.grad)}")
-  if torch.linalg.norm(y.grad) > 1e-1:
-    dk = - y.grad
-    print("GRADIENT")
-    flag = True
-  else:
-    d = torch.zeros(reduced_dim).to(device)
-    d.requires_grad_(True)
-    obj.set(x,P)
-    hess = hessian(obj,d)
-    flag = False
-    min_eig,min_vec = compute_min_eigen(hess)
-    if min_eig <= 0:
-      dk = -torch.sign(y.grad@P@min_vec)*P@min_vec
-      print("NC")
-    else:
-      dk = -P@torch.linalg.inv(hess)@P.transpose(0,1)@y.grad
-      print("NEWTON")
-  with torch.no_grad():
-      if flag:
-        lr = init_lr
-      else:
-        lr = 10
-      f.params = [data[:40000].to(device),label[:40000].to(device)]
-      f1 = f(x)
-      while f1 - f(x + lr*dk) < -alpha*lr*y.grad@dk:
-          lr *= beta  
-      x += lr*dk
-      if flag:
-        if lr == init_lr:
-          init_lr *=2
-        else:
-          init_lr = lr
-  losses.append(f1.cpu())
-  print(losses[-1])
-  print("")
+savepath = os.path.join(RESULTPATH,problem,problem_dir,solver_name,solver_dir)
+os.makedirs(savepath,exist_ok= True)
+x0.requires_grad_(True)
 
-plt.plot(np.arange(len(losses)),losses)
-plt.savefig("./results/proposed_plot.png")
+
+if __name__ == "__main__":
+  solver.__iter__(func,x0,params,iterations,savepath,interval)
+  plt.plot(solver.time_values,solver.fvalues)
+  print("finished")
+  plt.savefig(os.path.join(savepath,"result.png"))
+  plt.savefig(os.path.join(savepath,"result.pdf"))

@@ -1,5 +1,6 @@
 import torch
 from torch.autograd.functional import hvp
+from environments import DEVICE
 
 def GetMinimumEig(H):
   eigenvalues = torch.linalg.eigvalsh(H)
@@ -22,3 +23,16 @@ def compute_min_eigen(matrix):
 def compute_hvp(func,x,v):
    return hvp(func,(x,),(v,))[1][0]
 
+
+def generate_semidefinite(dim,rank):
+   P = torch.randn(dim,rank,device = DEVICE)
+   return P@P.transpose(0,1)
+
+def generate_definite(dim):
+   return generate_definite(dim,dim)
+
+def generate_symmetric(dim):
+   P = torch.randn(dim,dim,device = DEVICE)
+   return (P + P.transpose(0.1))/2
+
+ 
