@@ -1,19 +1,21 @@
 {
-    "problem":"test",
+    "problem":"Quadratic",
     "properties" : 
     {
-        "dim" : "1000"
+        "property":"convex",
+        "dim" : "1000",
+        "rank":"100"
     }
     ,
-    "solver":"proposed",
+    "solver":"RGF",
     "params":
     {
         "lr" : "1e-4",
-        "reduced_dim":"100",
-        "mu": "1e-8",
-        "sample_size" : "10",
-        "step_schedule" : "constant"
+        "sample_size":"1",
+        "mu":"1e-8",
+        "step_schedule":"constant"
     },
-    "iterations":"100",
-    "interval":"10"
+    "iterations":"1000",
+    "interval":"100",
+    "trial_numbers":2
 }

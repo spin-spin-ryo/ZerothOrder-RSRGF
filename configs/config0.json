@@ -1,0 +1,1 @@
+{"problem": "Quadratic", "properties": {"property": "convex", "dim": 1000, "rank": 100}, "solver": "proposed", "params": {"lr": 0.001, "reduced_dim": 100, "mu": 1e-08, "sample_size": 100, "step_schedule": "constant"}, "iterations": 10000, "interval": 1000}

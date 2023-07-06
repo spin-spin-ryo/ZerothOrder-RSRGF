@@ -67,14 +67,7 @@ class __optim__:
                 self.__save__(savepath)
     
     def __save__(self,savepath):
-        torch.save(self.fvalues,os.path.join(savepath,"fvalue.pth"))
-        torch.save(self.time_values,os.path.join(savepath,"time_value.pth"))
-        result_json = {"min_val":torch.min(self.fvalues).item(),
-                       "execution_time":torch.max(self.time_values).item()}
-        with open(os.path.join(savepath,"result.json"),"w") as f:
-            json.dump(result_json,f)
-            f.close()
-
+        return    
 
 
 """
