@@ -5,9 +5,10 @@
         "dim": 1000,
         "rank": 100
     },
-    "solver": "RGF",
+    "solver": "proposed",
     "params": {
         "lr": 0.0001,
+        "reduced_dim": 10,
         "mu": 1e-08,
         "sample_size": 1,
         "step_schedule": "constant"

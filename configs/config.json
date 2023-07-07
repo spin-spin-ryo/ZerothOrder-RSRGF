@@ -1,21 +1,16 @@
 {
-    "problem":"Quadratic",
+    "problem":"piecewise-linear",
     "properties" : 
     {
-        "property":"convex",
-        "dim" : "1000",
-        "rank":"100"
+        "dim" : "1000"
     }
     ,
-    "solver":"RGF",
+    "solver":"GD",
     "params":
     {
-        "lr" : "1e-4",
-        "sample_size":"1",
-        "mu":"1e-8",
-        "step_schedule":"constant"
+        "lr" : "1e-3"
     },
-    "iterations":"1000",
-    "interval":"100",
-    "trial_numbers":2
+    "iterations":"20000",
+    "interval":"10000",
+    "trial_numbers":1
 }

@@ -6,20 +6,20 @@ from utils import GetMinimumEig,compute_hvp
 import time
 import json
 from environments import *
+from torch.autograd.functional import hessian
 
 class __optim__:
     def __init__(self):
         self.xk = None
         self.params = None
-        self.fvalues = None
-        self.time_values = None
-        self.loss = None
+        self.save_values = {}
         self.func = None
         self.device = None
         self.dtype = None
+        self.start_time = None
         return
 
-    def __direction__(self):
+    def __direction__(self,loss):
         return
 
     def __update__(self,dk):
@@ -31,19 +31,17 @@ class __optim__:
         self.xk.grad = None
         return
     
-    def __set__(self,loss):
-        self.loss = loss
-        return
-
+    
     def __iter_per__(self,i):
         self.__clear__()
         loss = self.func(self.xk)
-        self.fvalues[i] = loss.item()
-        self.__set__(loss)
-        dk = self.__direction__()
+        dk = self.__direction__(loss)
         lr = self.__step__(i)
         self.__update__(lr*dk)
+        self.__save_value__(loss,i)
         return
+    
+    
     
     def __step__(self,i):
         return 1.0
@@ -52,23 +50,32 @@ class __optim__:
         if interval is None:
             interval = iterations
         torch.cuda.synchronize()
-        start_time = time.time()
+        self.start_time = time.time()
         self.params = params
         self.xk = x0
         self.func = func
-        self.fvalues = torch.zeros(iterations,dtype = DTYPE)
-        self.time_values = torch.zeros(iterations)
+        self.__save_init__(iterations)
         for i in range(iterations):
-            torch.cuda.synchronize()
-            self.time_values[i] = time.time() - start_time
             self.__iter_per__(i)
-
             if (i+1)%interval == 0:
                 self.__save__(savepath)
     
-    def __save__(self,savepath):
-        return    
+    def __save_init__(self,iterations):
+        self.save_values[("fvalues","min")] = torch.zeros(iterations,dtype = DTYPE)
+        self.save_values[("time_values","max")] = torch.zeros(iterations)
+    
+    def __save_value__(self,loss,index):
+        torch.cuda.synchronize()
+        self.save_values[("time_values","max")][index] = time.time() -self.start_time
+        self.save_values[("fvalues","min")][index] = loss.item()
 
+    
+    def __save__(self,savepath):
+        return
+        
+
+    
+    
 
 """
 first and second order method
@@ -78,16 +85,25 @@ class GradientDescent(__optim__):
     #固定ステップサイズのGD
     def __init__(self):
         # params = [lr]
+        self.grad_value = None
         super().__init__()
     
-    def __direction__(self):
-        self.loss.backward()
+    def __direction__(self,loss):
+        loss.backward()
         return - self.xk.grad
 
     def __update__(self, dk):
         # step sizeを求める
         lr = self.params[0]
         return super().__update__(lr*dk)
+    
+    def __save_init__(self, iterations):
+        self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
+        return super().__save_init__(iterations)
+
+    def __save_value__(self, loss, index):
+        self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
+        return super().__save_value__(loss, index)
 
 
 class SubspaceGD(__optim__):
@@ -95,17 +111,25 @@ class SubspaceGD(__optim__):
         # params = [reduced_dim,lr]
         super().__init__()
     
-    def __direction__(self):
+    def __direction__(self,loss):
         reduced_dim = self.params[0]
         dim = self.xk.shape[0]
-        P = torch.randn(reduced_dim,dim)/(dim**(0.5))
+        P = torch.randn(reduced_dim,dim)/(reduced_dim**(0.5))
         P = P.to(self.device).to(self.dtype)
-        self.loss.backward()
+        loss.backward()
         return - P.transpose(0,1)@P@self.xk.grad
 
     def __update__(self, dk):
         lr = self.params[1]
-        return super().__update__(lr*dk)        
+        return super().__update__(lr*dk)  
+
+    def __save_init__(self, iterations):
+        self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
+        return super().__save_init__(iterations)
+
+    def __save_value__(self, loss, index):
+        self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
+        return super().__save_value__(loss, index)      
 
 class AcceleratedGD(__optim__):
     def __init__(self):
@@ -117,22 +141,30 @@ class AcceleratedGD(__optim__):
         self.yk = x0.clone().detach()
         return super().__iter__(func,x0,params,iterations,savepath,interval)    
 
-    def __direction__(self):
+    def __direction__(self,loss):
+        loss.backward()
+        return self.xk.grad
+        
+    def __update__(self, grad):
         lr = self.params[0]
-        self.loss.backward()
-        with torch.no_grad():
-            yk1 = self.xk - lr*self.xk.grad
-            return yk1
-    
-    def __update__(self, yk1):
         lambda_k1 = (1 + (1 + 4*self.lambda_k**2)**(0.5))/2
         gamma_k = ( 1 - self.lambda_k)/lambda_k1
         with torch.no_grad():
+            yk1 = self.xk - lr*grad
             self.xk = (1 - gamma_k)*yk1 + gamma_k*self.yk
             self.yk = yk1
             self.lambda_k = lambda_k1
         self.xk.requires_grad_(True)
-        return 
+        self.xk.grad = grad
+        return
+    
+    def __save_init__(self, iterations):
+        self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
+        return super().__save_init__(iterations)
+
+    def __save_value__(self, loss, index):
+        self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
+        return super().__save_value__(loss, index)
 
 
 
@@ -148,19 +180,20 @@ class random_gradient_free(__optim__):
         self.determine_stepsize  = determine_stepsize
         super().__init__()
 
-    def __direction__(self):
+    def __direction__(self,loss):
         with torch.no_grad():
             mu = self.params[0]
             sample_size = self.params[1]
             dim = self.xk.shape[0]
             dir = None
+            P = torch.randn(sample_size,dim)/(sample_size**(0.5))
+            P = P.to(self.device).to(self.dtype)
             for i in range(sample_size):
-                u = torch.randn(dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
-                f1 = self.func(self.xk + mu*u)
+                f1 = self.func(self.xk + mu*P[i])
                 if dir is None:
-                    dir = (f1.item() - self.loss.item())/mu * u 
+                    dir = (f1.item() - loss.item())/mu * P[i] 
                 else:
-                    dir += (f1.item() - self.loss.item())/mu * u
+                    dir += (f1.item() - loss.item())/mu * P[i]
             return - dir 
     
     def __step__(self,i):
@@ -185,9 +218,9 @@ class NewtonMethod(__optim__):
     def __init__(self):
         super().__init__()
     
-    def __direction__(self):
+    def __direction__(self,loss):
         H = hessian(self.func,self.xk)
-        self.loss.backward()
+        loss.backward()
         return - torch.linalg.solve(H,self.xk.grad)
     
     def __update__(self, dk):
@@ -207,14 +240,14 @@ class SubspaceNewton(__optim__):
     def subspace_func(self,d):
         return self.func(self.xk + self.Pk@d)
     
-    def __direction__(self):
+    def __direction__(self,loss):
         reduced_dim = self.params[0]
         dim = self.xk.shape[0]
         self.Pk = torch.randn(dim,reduced_dim)/(dim**0.5)
         self.Pk = self.Pk.to(self.device)
         d = torch.zeros(reduced_dim).to(self.device)
         PHP = hessian(self.subspace_func,d)
-        self.loss.backward()
+        loss.backward()
         return - self.Pk @ torch.linalg.solve(PHP,self.Pk.transpose(0,1)@self.xk.grad)
     
     def __update__(self, dk):
@@ -233,7 +266,7 @@ class SubspaceRNM(__optim__):
     def subspace_func(self,d):
         return self.func(self.xk + self.Pk@d)
     
-    def __direction__(self):
+    def __direction__(self,loss):
         reduced_dim = self.params[0]
         c1 = self.params[1]
         c2 = self.params[2]
@@ -244,7 +277,7 @@ class SubspaceRNM(__optim__):
         self.Pk = self.Pk.to(self.device)
         d = torch.zeros(reduced_dim).to(self.device)
         PHP = hessian(self.subspace_func,d)
-        self.loss.backward()
+        loss.backward()
         min_eig = GetMinimumEig(PHP)
         Lambda_k = max(0,-min_eig)
         Mk = PHP + c1*Lambda_k*torch.eye(reduced_dim,device = self.device) + c2 * torch.linalg.norm(self.xk.grad)**r * torch.eye(reduced_dim,device= self.device)
@@ -263,13 +296,13 @@ class ExtendedRMM(__optim__):
     def __init__(self):
         super().__init__()
     
-    def __direction__(self):
+    def __direction__(self,loss):
         c1 = self.params[0]
         c2 = self.params[1]
         r = self.params[2]
         dim = self.xk.shape[0]
         H = hessian(self.func,self.xk)
-        self.loss.backward()
+        loss.backward()
         min_eig = GetMinimumEig(H)
         Lambda_k = max(0,-min_eig)
         Mk = H + c1*Lambda_k*torch.eye(dim,device = self.device) + c2 * torch.linalg.norm(self.xk.grad)**r * torch.eye(dim,device= self.device)

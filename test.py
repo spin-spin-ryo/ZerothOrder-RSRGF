@@ -53,19 +53,43 @@ def run(config_name):
     x = x0.clone().detach()
     x.requires_grad_(True)
     solver.__iter__(func,x,params,iterations,savepath,interval)
-    result_json["result"].append({"min_val":torch.min(solver.fvalues).item(),"time":torch.max(solver.time_values).item()})
+    result_dict = {}
+    for k,v in solver.save_values.items():
+      if k[1] == "min":
+        result_dict[k[0]] = torch.min(v).item()
+      elif k[1] == "max":
+        result_dict[k[0]] = torch.max(v).item()
+    print(result_dict)
+    result_json["result"].append(result_dict)
 
 
   # 最後の反復の結果だけ保存
-  plt.plot(solver.time_values,solver.fvalues)
-  print(f"min_val:{torch.min(solver.fvalues).item()}")
+  fvalues = None
+  timevalues = None
+  for k,v in solver.save_values.items():
+    torch.save(v,os.path.join(savepath,k[0]+".pth"))
+    if k[0] == "fvalues":
+      fvalues = v
+    if k[0] == "time_values":
+      timevalues = v
+  plt.plot(timevalues,fvalues)
   plt.savefig(os.path.join(savepath,"result.png"))
   plt.savefig(os.path.join(savepath,"result.pdf"))
-  torch.save(solver.fvalues,os.path.join(savepath,"fvalue.pth"))
-  torch.save(solver.time_values,os.path.join(savepath,"time_value.pth"))
+  min_values = []
+  for each_result in result_json['result']:
+    for k,v in each_result.items():
+      if k == "fvalues":
+        min_values.append(v)
+  
+  min_values = np.array(min_values)
+  result_json["mean"] = min_values.mean()
+  result_json["std"] = min_values.std()
   with open(os.path.join(savepath,"result.json"),"w") as f:
     json.dump(result_json,f,indent=4)
     f.close()
+  
+  
+
 
 
 if __name__ == "__main__":

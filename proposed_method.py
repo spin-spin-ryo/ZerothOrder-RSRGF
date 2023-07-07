@@ -7,7 +7,7 @@ class proposed(__optim__):
         self.determine_stepsize  = determine_stepsize
         super().__init__()
     
-    def __direction__(self):
+    def __direction__(self,loss):
         with torch.no_grad():
             reduced_dim = self.params[0]
             sample_size = self.params[1]
@@ -16,15 +16,14 @@ class proposed(__optim__):
             P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(reduced_dim,device = self.device,dtype = self.dtype))
 
             subspace_func = lambda d: self.func(self.xk + P@d)
-
             subspace_dir = None
+            U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
             for i in range(sample_size):
-                d = torch.randn(reduced_dim,device= self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
-                g1 = subspace_func(mu*d)
+                g1 = subspace_func(mu*U[i])
                 if subspace_dir is None:
-                    subspace_dir = (g1 - self.loss.item())/mu * d
+                    subspace_dir = (g1 - loss.item())/mu * U[i]
                 else:
-                    subspace_dir += (g1 - self.loss.item())/mu * d
+                    subspace_dir += (g1 - loss.item())/mu * U[i]
             return - P@subspace_dir
     
     def __step__(self,i):

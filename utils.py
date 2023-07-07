@@ -28,11 +28,15 @@ def generate_semidefinite(dim,rank):
    P = torch.randn(dim,rank,device = DEVICE)
    return P@P.transpose(0,1)
 
-def generate_definite(dim):
-   return generate_definite(dim,dim)
-
 def generate_symmetric(dim):
    P = torch.randn(dim,dim,device = DEVICE)
-   return (P + P.transpose(0.1))/2
+   return (P + P.transpose(0,1))/2
 
+def generate_definite(dim):
+   P = generate_symmetric(dim)
+   min_eig = GetMinimumEig(P)
+   if min_eig < 0:
+      return P - 10*min_eig*torch.eye(dim,device= DEVICE)
+   else:
+      return P
  

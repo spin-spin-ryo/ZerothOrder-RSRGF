@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Function:
-  def __init__(self,params):
+  def __init__(self,params = []):
     self.params = params
     return
 
@@ -23,6 +23,17 @@ class QuadraticFunction(Function):
     Q = self.params[0]
     b = self.params[1]
     return 1/2*(Q@x)@x+b@x
+
+class max_linear(Function):
+  def __call__(self, x):
+    A = self.params[0]
+    b = self.params[1]
+    return torch.max(A@x + b)
+
+class piecewise_linear(Function):
+  def __call__(self,x):
+    return torch.abs(1-x[0]) + torch.sum(torch.abs( 1 + x[1:] - 2*x[:-1]))
+  
 
 class CNN_func(Function):
     def __init__(self, params):
