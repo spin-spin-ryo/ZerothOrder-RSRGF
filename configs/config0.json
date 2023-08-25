@@ -1,18 +1,23 @@
 {
-    "problem": "Quadratic",
+    "problem": "regularized Quadratic",
     "properties": {
-        "property": "convex",
         "dim": 1000,
-        "rank": 100
+        "data_num": null,
+        "rank": 500,
+        "property": "convex",
+        "ord": 1,
+        "coef": 1e-06,
+        "fused": false
     },
     "solver": "RGF",
     "params": {
-        "lr": 0.0001,
-        "mu": 1e-08,
+        "lr": 1e-06,
+        "reduced_dim": 100,
         "sample_size": 1,
+        "mu": 1e-08,
         "step_schedule": "constant"
     },
-    "iterations": 10000,
-    "interval": 1000,
+    "iterations": 50000,
+    "interval": 10000,
     "trial_numbers": 100
 }
