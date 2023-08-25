@@ -1,3 +1,4 @@
+from typing import Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,13 +10,16 @@ class Function:
 
   def __call__(self,x):
     return
+  
   def SetDtype(self,dtype):
     for i in range(len(self.params)):
-      self.params[i] = self.params[i].to(dtype)
+      if self.params[i] is not None:
+        self.params[i] = self.params[i].to(dtype)
     return
   def SetDevice(self,device):
     for i in range(len(self.params)):
-      self.params[i] = self.params[i].to(device)
+      if self.params[i] is not None:
+        self.params[i] = self.params[i].to(device)
     return
 
 class QuadraticFunction(Function):
@@ -34,6 +38,43 @@ class piecewise_linear(Function):
   def __call__(self,x):
     return torch.abs(1-x[0]) + torch.sum(torch.abs( 1 + x[1:] - 2*x[:-1]))
   
+class norm_function(Function):
+  def __call__(self, x):
+    Q = self.params[0]
+    b = self.params[1]
+    p = self.params[2]
+    return torch.linalg.norm(Q@x - b,ord = p)
+
+class logistic(Function):
+  def __call__(self,x):
+    X = self.params[0]
+    y = self.params[1]
+    a = X@x
+    return torch.mean(torch.log(1 + torch.exp(-y*a)))
+
+class regularizedfunction(Function):
+  def __init__(self,f,params):
+    self.f = f
+    assert len(params) ==3
+    self.params = params
+    return
+
+  def __call__(self,x):
+    p = self.params[-3]
+    l = self.params[-2]
+    A = self.params[-1]
+    if A is not None:
+      return self.f(x) + l*torch.linalg.norm(A@x,ord = p)
+    else:
+      return self.f(x) + l*torch.linalg.norm(x,ord = p)
+  
+  def SetDevice(self, device):
+    self.f.SetDevice(device)
+    return super().SetDevice(device)
+
+  def SetDtype(self, dtype):
+    self.f.SetDtype(dtype)
+    return super().SetDtype(dtype)
 
 class CNN_func(Function):
     def __init__(self, params):

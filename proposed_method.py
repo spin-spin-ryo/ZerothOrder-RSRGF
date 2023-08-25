@@ -13,7 +13,7 @@ class proposed(__optim__):
             sample_size = self.params[1]
             mu = self.params[2]
             dim = self.xk.shape[0]
-            P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(reduced_dim,device = self.device,dtype = self.dtype))
+            P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(dim,device = self.device,dtype = self.dtype))
 
             subspace_func = lambda d: self.func(self.xk + P@d)
             subspace_dir = None

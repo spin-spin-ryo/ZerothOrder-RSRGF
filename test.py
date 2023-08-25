@@ -40,11 +40,13 @@ def run(config_name):
   problem_dir = ""
   solver_dir = ""
   for k,v in properties.items():
-    problem_dir += k + ":" + str(v) + "_"
+    if v is not None:
+      problem_dir += k + ":" + str(v) + "_"
   problem_dir = problem_dir[:-1]
 
   for k,v in params_json.items():
-    solver_dir += k + ":" + str(v) + "_"
+    if v is not None:
+      solver_dir += k + ":" + str(v) + "_"
   solver_dir = solver_dir[:-1]
   savepath = os.path.join(RESULTPATH,problem,problem_dir,solver_name,solver_dir)
   os.makedirs(savepath,exist_ok= True)

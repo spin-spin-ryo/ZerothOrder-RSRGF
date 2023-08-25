@@ -1,16 +1,26 @@
 {
-    "problem":"piecewise-linear",
+    "problem":"regularized Quadratic",
     "properties" : 
     {
-        "dim" : "1000"
+        "dim" : 1000,
+        "data_num":null,
+        "rank":500,
+        "property":"convex",
+        "ord":1,
+        "coef":1e-6,
+        "fused":false
     }
     ,
-    "solver":"GD",
+    "solver":"RGF",
     "params":
     {
-        "lr" : "1e-3"
+        "lr" : 1e-6,
+        "reduced_dim": null,
+        "sample_size":1,
+        "mu":1e-8,
+        "step_schedule":"constant"
     },
-    "iterations":"20000",
-    "interval":"10000",
+    "iterations":10000,
+    "interval":5000,
     "trial_numbers":1
 }

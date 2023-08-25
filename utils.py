@@ -40,3 +40,12 @@ def generate_definite(dim):
    else:
       return P
  
+def generate_zeroone(dim):
+   a = torch.randn(dim)
+   a[a>=0] = 1
+   a[a<0] = -1
+   a = a.to(torch.int64)
+   return a
+
+def generate_fusedmatrix(dim):
+   return torch.eye(dim)

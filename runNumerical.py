@@ -4,20 +4,20 @@ from environments import CONFIGPATH
 import json
 from test import run
 
-problem = "Quadratic"
+problem = "regularized Quadratic"
 property = "convex"
 dim = 1000
-rank = 100
+rank = 500
 
 
-lrs = [1e-4]
+lrs = [1e-6,1e-7,1e-8]
 solver_name = "RGF"
 mus = [1e-8]
-sample_sizes = [1,10,100]
-reduced_dims = [1,10,100]
-iterations = 10000
-interval = 1000
-trial_numbers = 100
+sample_sizes = [1]
+reduced_dims = [1]
+iterations = 50000
+interval = 10000
+trial_numbers = 1
 count = 0
 
 for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sample_sizes):
