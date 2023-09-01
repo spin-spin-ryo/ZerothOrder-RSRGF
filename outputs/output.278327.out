@@ -1,0 +1,8 @@
+{'problem': 'piecewise-linear', 'properties': {'dim': 1000}, 'solver': 'RGD', 'params': {'lr': 1e-05, 'reduced_dim': 100}, 'iterations': 50000, 'interval': 1000, 'trial_numbers': 1}
+grad_values:31.74901573277509
+fvalues:497.9722098833053
+time_values:160.7195281982422
+{'problem': 'piecewise-linear', 'properties': {'dim': 1000}, 'solver': 'RGD', 'params': {'lr': 1e-06, 'reduced_dim': 100}, 'iterations': 50000, 'interval': 1000, 'trial_numbers': 1}
+grad_values:31.74901573277509
+fvalues:949.6088113076808
+time_values:157.1016387939453

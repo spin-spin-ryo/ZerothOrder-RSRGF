@@ -7,6 +7,12 @@ import time
 import json
 from environments import *
 from torch.autograd.functional import hessian
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 class __optim__:
     def __init__(self):
@@ -31,6 +37,13 @@ class __optim__:
         self.xk.grad = None
         return
     
+    def __log__(self,iteration):
+        min_val = torch.min(self.save_values[("fvalues","min")][:iteration])
+        time_val = self.save_values[("time_values","max")][iteration]
+        logger.info(f"{iteration + 1}")
+        logger.info(f"min_value:{min_val}")
+        logger.info(f"time:{time_val}")
+    
     
     def __iter_per__(self,i):
         self.__clear__()
@@ -38,7 +51,8 @@ class __optim__:
         dk = self.__direction__(loss)
         lr = self.__step__(i)
         self.__update__(lr*dk)
-        self.__save_value__(loss,i)
+        torch.cuda.synchronize()
+        self.__save_value__(i,fvalues = ("min",loss.item()),time_values = ("max",time.time() - self.start_time))
         return
     
     
@@ -54,21 +68,23 @@ class __optim__:
         self.params = params
         self.xk = x0
         self.func = func
-        self.__save_init__(iterations)
+        self.__save_init__(iterations,fvalues = "min",time_values = "max")
         for i in range(iterations):
             self.__iter_per__(i)
             if (i+1)%interval == 0:
                 self.__save__(savepath)
+                self.__log__(i)
     
-    def __save_init__(self,iterations):
-        self.save_values[("fvalues","min")] = torch.zeros(iterations,dtype = DTYPE)
-        self.save_values[("time_values","max")] = torch.zeros(iterations)
-    
-    def __save_value__(self,loss,index):
-        torch.cuda.synchronize()
-        self.save_values[("time_values","max")][index] = time.time() -self.start_time
-        self.save_values[("fvalues","min")][index] = loss.item()
-
+    def __save_init__(self,iterations,**kwargs):
+        for key,ope in kwargs.items():
+            self.save_values[(key,ope)] = torch.zeros(iterations,dtype = DTYPE)
+            
+    def __save_value__(self,index, **kwargs):
+        for key,t in kwargs.items():
+            ope = t[0]
+            value = t[1]
+            self.save_values[(key,ope)][index] = value
+            
     
     def __save__(self,savepath):
         return
@@ -186,8 +202,7 @@ class random_gradient_free(__optim__):
             sample_size = self.params[1]
             dim = self.xk.shape[0]
             dir = None
-            P = torch.randn(sample_size,dim)/(sample_size**(0.5))
-            P = P.to(self.device).to(self.dtype)
+            P = torch.randn(sample_size,dim,device = self.device,dtype = self.dtype)/(sample_size**(0.5))
             for i in range(sample_size):
                 f1 = self.func(self.xk + mu*P[i])
                 if dir is None:

@@ -1,0 +1,8 @@
+./results/regularized test/dim:1000_ord:1_coef:1e-06_fused:False/RGF/lr:0.1_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:500.0009999999975
+time_values:3.878596305847168
+./results/regularized test/dim:1000_ord:1_coef:1e-06_fused:False/RGF/lr:0.01_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:500.0009999999975
+time_values:0.36618757247924805

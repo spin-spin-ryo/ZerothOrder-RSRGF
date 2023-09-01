@@ -28,6 +28,10 @@ class QuadraticFunction(Function):
     b = self.params[1]
     return 1/2*(Q@x)@x+b@x
 
+class test_function(Function):
+  def __call__(self,x):
+    return 1/2*x@x
+
 class max_linear(Function):
   def __call__(self, x):
     A = self.params[0]
@@ -51,6 +55,22 @@ class logistic(Function):
     y = self.params[1]
     a = X@x
     return torch.mean(torch.log(1 + torch.exp(-y*a)))
+
+class subspace_norm(Function):
+  def __call__(self,x):
+    r = self.params[0]
+    p = self.params[1]
+    return torch.linalg.norm(x[:r],ord = p)**p
+  
+  def SetDtype(self,dtype):
+    for i in range(len(self.params)):
+      if self.params[i] is not None:
+        self.params[i] = self.params[i].to(torch.int64)
+    return  
+
+class rosenbrock(Function):
+  def __call__(self,x):
+    super().__call__(x)
 
 class regularizedfunction(Function):
   def __init__(self,f,params):

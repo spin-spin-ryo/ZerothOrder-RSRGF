@@ -5,12 +5,18 @@ import torch
 def decreasing_stepsize(i):
     return 1/(i+1)
 
+def decreasing_stepsize_half(i):
+    return 1/((i+1)**0.5)
+
 
 def get_determine_step(init_lr,step_schedule):
     if step_schedule == "constant":
         return None
     elif step_schedule == "decreasing":
         determine_step = lambda i: init_lr*decreasing_stepsize(i)
+        return determine_step
+    elif step_schedule == "decreasing-half":
+        determine_step = lambda i: init_lr*decreasing_stepsize_half(i)
         return determine_step
     else:
         raise ValueError("No step size schedule.")

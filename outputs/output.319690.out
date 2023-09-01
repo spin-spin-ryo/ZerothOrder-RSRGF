@@ -1,0 +1,15 @@
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/RGF/lr:0.1_sample_size:1_mu:1e-08_step_schedule:constant
+Traceback (most recent call last):
+  File "/home/u00786/Research/optimization/runNumerical.py", line 63, in <module>
+    run(config_name)
+  File "/home/u00786/Research/optimization/test.py", line 65, in run
+    solver.__iter__(func,x,params,iterations,savepath,interval)
+  File "/home/u00786/Research/optimization/optim_method.py", line 73, in __iter__
+    self.__iter_per__(i)
+  File "/home/u00786/Research/optimization/optim_method.py", line 223, in __iter_per__
+    return super().__iter_per__(i)
+  File "/home/u00786/Research/optimization/optim_method.py", line 50, in __iter_per__
+    loss = self.func(self.xk)
+  File "/home/u00786/Research/optimization/function.py", line 73, in __call__
+    return self.f(x) + l*torch.linalg.norm(x,ord = p)
+TypeError: unsupported operand type(s) for +: 'NoneType' and 'Tensor'

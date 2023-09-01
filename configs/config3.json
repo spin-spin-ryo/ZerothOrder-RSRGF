@@ -1,19 +1,24 @@
 {
-    "problem": "Quadratic",
+    "problem": "subspace-norm local",
     "properties": {
-        "property": "convex",
-        "dim": 1000,
-        "rank": 100
+        "dim": 1000000,
+        "data_num": null,
+        "rank": null,
+        "property": null,
+        "ord": 1,
+        "subspace": 1000,
+        "coef": null,
+        "fused": false
     },
     "solver": "proposed",
     "params": {
-        "lr": 0.0001,
-        "reduced_dim": 10,
+        "lr": 1,
+        "reduced_dim": 100,
+        "sample_size": 10,
         "mu": 1e-08,
-        "sample_size": 1,
         "step_schedule": "constant"
     },
     "iterations": 10000,
-    "interval": 1000,
-    "trial_numbers": 100
+    "interval": 100000,
+    "trial_numbers": 1
 }

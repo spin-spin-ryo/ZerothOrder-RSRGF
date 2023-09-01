@@ -1,5 +1,6 @@
 from optim_method import __optim__
 import torch
+import time
 
 class proposed(__optim__):
     def __init__(self,determine_stepsize):
@@ -36,5 +37,34 @@ class proposed(__optim__):
     def __iter_per__(self, i):
         with torch.no_grad():
             return super().__iter_per__(i)
+    
+    def __iter__(self,func,x0,params,iterations,savepath,interval = None):
+        if interval is None:
+            interval = iterations
+        torch.cuda.synchronize()
+        self.start_time = time.time()
+        self.params = params
+        self.xk = x0
+        self.func = func
+        self.__save_init__(iterations,fvalues = "min",time_values = "max",norm_dir = "iter")
+        for i in range(iterations):
+            self.__iter_per__(i)
+            if (i+1)%interval == 0:
+                self.__save__(savepath)
+                self.__log__(i)
+    
+    def __iter_per__(self,i):
+        self.__clear__()
+        loss = self.func(self.xk)
+        dk = self.__direction__(loss)
+        lr = self.__step__(i)
+        self.__update__(lr*dk)
+        torch.cuda.synchronize()
+        self.__save_value__(i,fvalues = ("min",loss.item()),
+                time_values = ("max",time.time() - self.start_time),
+                norm_dir = ("iter",torch.linalg.norm(dk).item()))
+        return
+    
+    
 
     

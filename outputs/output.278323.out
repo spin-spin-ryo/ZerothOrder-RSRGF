@@ -1,0 +1,21 @@
+{'problem': 'piecewise-linear', 'properties': {'dim': 1000}, 'solver': 'proposed', 'params': {'lr': 0.001, 'reduced_dim': 100, 'mu': 1e-08, 'sample_size': 10, 'step_schedule': 'constant'}, 'iterations': 50000, 'interval': 1000, 'trial_numbers': 10}
+fvalues:261.14051098489466
+time_values:165.34693908691406
+fvalues:257.0169317661073
+time_values:159.37461853027344
+fvalues:255.83163488267158
+time_values:159.69598388671875
+fvalues:256.1843981266861
+time_values:159.8198699951172
+fvalues:262.57063851023196
+time_values:159.22555541992188
+fvalues:255.05499323721835
+time_values:159.83346557617188
+fvalues:256.41304155181524
+time_values:158.98095703125
+fvalues:255.09655112960576
+time_values:160.313232421875
+fvalues:256.86339802742185
+time_values:159.08546447753906
+fvalues:258.94238809261145
+time_values:159.7133026123047

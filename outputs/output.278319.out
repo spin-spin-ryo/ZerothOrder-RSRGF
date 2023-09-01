@@ -1,0 +1,4 @@
+  File "/home/u00786/Research/optimization/runNumerical.py", line 35
+    "mu": mu,
+    ^
+SyntaxError: invalid syntax

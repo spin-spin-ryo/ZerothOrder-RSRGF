@@ -1,0 +1,21 @@
+./results/subspace-norm local/dim:1000000_ord:1_subspace:100_fused:False/RGF/lr:0.1_sample_size:1_mu:1e-08_step_schedule:constant
+10000
+min_value:9.999999974752427e-05
+time:5.566442489624023
+10000
+fvalues:9.999999974752427e-05
+time_values:5.566442489624023
+./results/subspace-norm local/dim:1000000_ord:1_subspace:100_fused:False/RGF/lr:0.01_sample_size:1_mu:1e-08_step_schedule:constant
+10000
+min_value:9.999999974752427e-05
+time:5.493852376937866
+10000
+fvalues:9.999999974752427e-05
+time_values:5.493852376937866
+./results/subspace-norm local/dim:1000000_ord:1_subspace:100_fused:False/RGF/lr:0.001_sample_size:1_mu:1e-08_step_schedule:constant
+10000
+min_value:9.999999974752427e-05
+time:5.493375301361084
+10000
+fvalues:9.999999974752427e-05
+time_values:5.493375301361084

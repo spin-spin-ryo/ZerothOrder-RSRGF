@@ -16,6 +16,16 @@ def generate(mode,properties):
         dim = int(properties["dim"])
         f = piecewise_linear()
         x0 = torch.zeros(dim)
+    elif mode == "subspace-norm":
+        f,x0 = generate_subspace(properties)
+    elif mode == "subspace-norm local":
+        f,x0 = generate_subspace(properties,local = True)
+    elif mode == "regularized test":
+        f ,x0 = generate_test(properties)
+        f = generate_regularized(f,properties)
+    elif mode == "regularized test local":
+        f ,x0 = generate_test(properties,local = True)
+        f = generate_regularized(f,properties)
     elif mode == "regularized Quadratic":
         f,x0 = generate_quadratic(properties)
         f = generate_regularized(f,properties)
@@ -52,13 +62,24 @@ def generate_max_linear(properties):
 
     
 
-def generate_test(properties):
+def generate_test(properties,local = False):
     dim = int(properties["dim"])
-    Q = torch.eye(dim)
-    b = torch.zeros(dim)
-    x0 = torch.ones(dim)
-    params = [Q,b]
-    f = QuadraticFunction(params=params)
+    if not local:
+        x0 = torch.ones(dim)
+    else:
+        x0 = torch.ones(dim) / dim
+    f = test_function()
+    return f,x0
+
+def generate_subspace(properties,local = False):
+    dim = int(properties["dim"])
+    subspace_dim = int(properties["subspace"])
+    ord = int(properties["ord"])
+    f = subspace_norm([torch.tensor(subspace_dim),torch.tensor(ord)])
+    if not local:
+        x0 = torch.ones(dim)
+    else:
+        x0 = torch.ones(dim)/dim
     return f,x0
 
 def generate_quadratic(properties):

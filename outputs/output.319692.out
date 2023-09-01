@@ -1,0 +1,20 @@
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/proposed/lr:0.1_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+5000
+fvalues:1492471.5121573284
+time_values:14.373366832733154
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/proposed/lr:0.01_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+5000
+fvalues:1498113.6961541693
+time_values:9.996421575546265
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/proposed/lr:0.001_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+5000
+fvalues:1499813.0050450778
+time_values:9.98038387298584
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/proposed/lr:0.0001_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+5000
+fvalues:1499979.902119222
+time_values:9.991512775421143
+./results/regularized test/dim:1000000_ord:1_coef:1_fused:False/proposed/lr:1e-05_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+5000
+fvalues:1499997.9541020582
+time_values:9.97987174987793

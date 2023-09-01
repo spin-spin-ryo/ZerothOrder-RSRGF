@@ -1,0 +1,4 @@
+  File "/home/u00786/Research/optimization/runNumerical.py", line 45
+    "coef":coef,
+    ^
+SyntaxError: invalid syntax

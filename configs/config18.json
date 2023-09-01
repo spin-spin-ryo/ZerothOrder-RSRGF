@@ -1,0 +1,24 @@
+{
+    "problem": "subspace-norm local",
+    "properties": {
+        "dim": 1000000,
+        "data_num": null,
+        "rank": null,
+        "property": null,
+        "ord": 1,
+        "subspace": 1000,
+        "coef": null,
+        "fused": false
+    },
+    "solver": "proposed",
+    "params": {
+        "lr": 1e-08,
+        "reduced_dim": 10,
+        "sample_size": 10,
+        "mu": 1e-08,
+        "step_schedule": "constant"
+    },
+    "iterations": 10000,
+    "interval": 100000,
+    "trial_numbers": 1
+}

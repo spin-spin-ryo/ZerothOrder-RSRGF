@@ -1,0 +1,4 @@
+./results/regularized test/dim:1000_ord:1_coef:1_fused:False/proposed/lr:0.001_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:1480.5754026036939
+time_values:4.57277512550354

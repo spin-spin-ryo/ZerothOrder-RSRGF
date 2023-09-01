@@ -1,0 +1,12 @@
+./results/regularized test/dim:1000_ord:1_coef:1e-06_fused:False/RGF/lr:0.001_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:305.0413784069381
+time_values:3.7477915287017822
+./results/regularized test/dim:1000_ord:1_coef:1e-06_fused:False/RGF/lr:0.0001_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:459.9312686928481
+time_values:0.3622095584869385
+./results/regularized test/dim:1000_ord:1_coef:1e-06_fused:False/RGF/lr:1e-05_sample_size:1_mu:1e-08_step_schedule:constant
+500
+fvalues:495.1855620437405
+time_values:0.3522214889526367

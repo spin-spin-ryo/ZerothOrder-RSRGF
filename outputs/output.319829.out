@@ -1,0 +1,20 @@
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/RGF/lr:1e-08_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.00047347225356322094
+time_values:33.076706647872925
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/RGF/lr:1e-09_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:6.583502170083524e-05
+time_values:33.23247313499451
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/RGF/lr:1e-10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:4.96932014406275e-05
+time_values:33.101956605911255
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/RGF/lr:1e-11_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009001403466743844
+time_values:33.08700251579285
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/RGF/lr:1e-12_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009900527894926518
+time_values:33.0553252696991

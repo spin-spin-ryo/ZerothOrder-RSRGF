@@ -1,0 +1,80 @@
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:10_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:67.27785778045654
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:10_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:219.75529599189758
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:63.51634192466736
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:219.70462250709534
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.1_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:63.417234659194946
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.1_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:219.92871809005737
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.01_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:63.74337434768677
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.01_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:219.99075055122375
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.001_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0008731119888733837
+time_values:63.194512367248535
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.001_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009999999974752427
+time_values:219.44789123535156
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.0001_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:9.9107978559644e-05
+time_values:63.39510440826416
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:0.0001_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0005281201576032466
+time_values:219.7405562400818
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-05_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:6.141731063995871e-05
+time_values:63.61557912826538
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-05_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:5.222888375051504e-05
+time_values:219.66183924674988
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-06_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0008993160885214362
+time_values:63.623810052871704
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-06_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:5.0419632365717434e-05
+time_values:219.59078097343445
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-07_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009900734370516255
+time_values:63.56138515472412
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-07_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.000899699757593153
+time_values:219.8367464542389
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-08_reduced_dim:10_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009989991720229829
+time_values:63.78263592720032
+./results/subspace-norm local/dim:1000000_ord:1_subspace:1000_fused:False/proposed/lr:1e-08_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+10000
+fvalues:0.0009900279230773239
+time_values:219.70562148094177

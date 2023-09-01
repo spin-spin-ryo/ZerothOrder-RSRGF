@@ -1,0 +1,14 @@
+{
+    "problem": "piecewise-linear",
+    "properties": {
+        "dim": 1000
+    },
+    "solver": "RGD",
+    "params": {
+        "lr": 1e-05,
+        "reduced_dim": 100
+    },
+    "iterations": 500000,
+    "interval": 1000,
+    "trial_numbers": 1
+}

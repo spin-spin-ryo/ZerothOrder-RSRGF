@@ -1,0 +1,6 @@
+./results/regularized Quadratic/dim:1000_rank:500_property:convex_ord:1_coef:1e-06_fused:False/proposed/lr:0.001_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+{'fvalues': 26498957.4796718, 'time_values': 6.2139105796813965}
+./results/regularized Quadratic/dim:1000_rank:500_property:convex_ord:1_coef:1e-06_fused:False/proposed/lr:0.0001_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+{'fvalues': 268612.48640199035, 'time_values': 1.647064447402954}
+./results/regularized Quadratic/dim:1000_rank:500_property:convex_ord:1_coef:1e-06_fused:False/proposed/lr:1e-05_reduced_dim:100_sample_size:10_mu:1e-08_step_schedule:constant
+{'fvalues': 7257616.3722113455, 'time_values': 1.6541218757629395}

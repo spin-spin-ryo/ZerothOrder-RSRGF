@@ -7,6 +7,13 @@ import json
 from environments import *
 from generate_problem import generate
 from get_solver import get_solver
+import sys
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 
 
 def run(config_name):
@@ -49,6 +56,7 @@ def run(config_name):
       solver_dir += k + ":" + str(v) + "_"
   solver_dir = solver_dir[:-1]
   savepath = os.path.join(RESULTPATH,problem,problem_dir,solver_name,solver_dir)
+  logger.info(savepath)
   os.makedirs(savepath,exist_ok= True)
   result_json = {"result":[]}
   for i in range(trial_numbers):
@@ -56,12 +64,14 @@ def run(config_name):
     x.requires_grad_(True)
     solver.__iter__(func,x,params,iterations,savepath,interval)
     result_dict = {}
+    logger.info(f"{iterations}")
     for k,v in solver.save_values.items():
       if k[1] == "min":
         result_dict[k[0]] = torch.min(v).item()
       elif k[1] == "max":
         result_dict[k[0]] = torch.max(v).item()
-    print(result_dict)
+    for k,v in result_dict.items():
+      logger.info(f"{k}:{v}")
     result_json["result"].append(result_dict)
 
 
@@ -74,9 +84,15 @@ def run(config_name):
       fvalues = v
     if k[0] == "time_values":
       timevalues = v
+    if k[0] == "norm_dir":
+      plt.plot(np.arange(len(v)),v)
+      plt.yscale("log")
+      plt.savefig(os.path.join(savepath,"norm_dir.png"))
+      plt.close()
   plt.plot(timevalues,fvalues)
   plt.savefig(os.path.join(savepath,"result.png"))
   plt.savefig(os.path.join(savepath,"result.pdf"))
+  plt.close()
   min_values = []
   for each_result in result_json['result']:
     for k,v in each_result.items():

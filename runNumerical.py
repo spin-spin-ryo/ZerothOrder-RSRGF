@@ -4,37 +4,47 @@ from environments import CONFIGPATH
 import json
 from test import run
 
-problem = "regularized Quadratic"
-property = "convex"
-dim = 1000
-rank = 500
+
+problem = "subspace-norm local"
+property = None
+dim = 1000000
+rank = None
+subspace = 1000
+ord = 1
+coef = None
 
 
-lrs = [1e-6]
-solver_name = "RGF"
-# solver_name = "proposed"
-mus = [1e-8,1e-5,1e-6,1e-7]
-sample_sizes = [1]
-reduced_dims = [100]
-iterations = 50000
-interval = 10000
-trial_numbers = 100
+# lrs = [1e-8,1e-9,1e-10,1e-11,1e-12]
+lrs = [10,1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
+
+# solver_name = "RGF"
+solver_name = "proposed"
+mus = [1e-8]
+sample_sizes = [10]
+reduced_dims = [10,100]
+iterations = 10000
+interval = 100000
+trial_numbers = 1
 count = 0
 data_num = None
 fused_flag = False
+step_schedule = "constant"
+
+
 
 for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sample_sizes):
     
     config_json = {
-        "problem":"regularized Quadratic",
+        "problem":problem,
         "properties" : 
         {
             "dim" : dim,
             "data_num":data_num,
             "rank":rank,
             "property":property,
-            "ord":1,
-            "coef":1e-6,
+            "ord":ord,
+            "subspace":subspace,
+            "coef":coef,
             "fused": fused_flag
         }
         ,
@@ -45,7 +55,7 @@ for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sam
             "reduced_dim": reduced_dim,
             "sample_size":sample_size,
             "mu":mu,
-            "step_schedule":"constant"
+            "step_schedule":step_schedule
         },
         "iterations":iterations,
         "interval":interval,
