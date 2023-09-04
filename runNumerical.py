@@ -2,7 +2,7 @@ import itertools
 import os
 from environments import CONFIGPATH
 import json
-from test import run
+from main import run
 
 
 problem = "subspace-norm local"
