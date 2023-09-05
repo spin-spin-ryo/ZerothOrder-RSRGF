@@ -1,9 +1,0 @@
-{'problem': 'piecewise-linear', 'properties': {'dim': 1000}, 'solver': 'p', 'params': {'lr': 0.001, 'mu': 1e-08, 'sample_size': 10, 'step_schedule': 'constant'}, 'iterations': 50000, 'interval': 1000, 'trial_numbers': 10}
-Traceback (most recent call last):
-  File "/home/u00786/Research/optimization/runNumerical.py", line 48, in <module>
-    run(config_name)
-  File "/home/u00786/Research/optimization/test.py", line 27, in run
-    solver,params = get_solver(solver_name=solver_name,params_json=params_json)
-  File "/home/u00786/Research/optimization/get_solver.py", line 51, in get_solver
-    raise ValueError("No optimization method.")
-ValueError: No optimization method.

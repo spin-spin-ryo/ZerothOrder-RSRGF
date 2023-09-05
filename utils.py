@@ -1,6 +1,7 @@
 import torch
 from torch.autograd.functional import hvp
 from environments import DEVICE
+import numpy as np
 
 def GetMinimumEig(H):
   eigenvalues = torch.linalg.eigvalsh(H)
@@ -48,4 +49,14 @@ def generate_zeroone(dim):
    return a
 
 def generate_fusedmatrix(dim):
-   return torch.eye(dim)
+   def fused_func(x):
+      return x[:-1] - x[1:]
+   return fused_func
+
+def convert_coo_torch(X):
+    values = X.data
+    indices = np.vstack((X.row,X.col))
+    i = torch.LongTensor(indices)
+    v = torch.FloatTensor(values)
+    shape = X.shape
+    return torch.sparse.FloatTensor(i,v,torch.Size(shape))

@@ -1,24 +1,25 @@
 {
-    "problem": "subspace-norm local",
+    "problem": "regularized NMF",
     "properties": {
-        "dim": 1000000,
+        "dim": null,
         "data_num": null,
-        "rank": null,
+        "rank": 50,
         "property": null,
         "ord": 1,
-        "subspace": 1000,
-        "coef": null,
-        "fused": false
+        "subspace": null,
+        "coef": 1e-05,
+        "fused": false,
+        "data-name": "movie"
     },
     "solver": "proposed",
     "params": {
         "lr": 0.01,
         "reduced_dim": 10,
-        "sample_size": 10,
+        "sample_size": 1,
         "mu": 1e-08,
         "step_schedule": "constant"
     },
     "iterations": 10000,
-    "interval": 100000,
+    "interval": 5000,
     "trial_numbers": 1
 }

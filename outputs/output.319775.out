@@ -1,8 +1,0 @@
-./results/subspace-norm/dim:1000000_ord:1_subspace:100_fused:False/proposed/lr:1000_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
-1000
-fvalues:51.21338722181638
-time_values:5.968901634216309
-./results/subspace-norm/dim:1000000_ord:1_subspace:100_fused:False/proposed/lr:100_reduced_dim:10_sample_size:1_mu:1e-08_step_schedule:constant
-1000
-fvalues:17.76727253607713
-time_values:1.8580152988433838

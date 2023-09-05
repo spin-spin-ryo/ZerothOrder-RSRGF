@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/home/u00786/Research/optimization/runNumerical.py", line 5, in <module>
-    from test import run
-  File "/home/u00786/Research/optimization/test.py", line 15, in <module>
-    logger.addHandler(logging.StreamHandler(sys.stdout))
-NameError: name 'sys' is not defined

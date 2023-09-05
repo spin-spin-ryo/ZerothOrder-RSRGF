@@ -1,3 +1,0 @@
-./results/regularized Quadratic/dim:1000_rank:500_property:convex_ord:1_coef:1e-06_fused:False/proposed/lr:1e-05_reduced_dim:50_sample_size:1_mu:1e-08_step_schedule:constant
-{'fvalues': -1486.9622470135419, 'time_values': 4559.90673828125}
-{'fvalues': -1341.5758822507946, 'time_values': 4545.58203125}

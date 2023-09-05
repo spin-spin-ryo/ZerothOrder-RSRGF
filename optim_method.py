@@ -113,14 +113,14 @@ class GradientDescent(__optim__):
         lr = self.params[0]
         return super().__update__(lr*dk)
     
-    def __save_init__(self, iterations):
+    def __save_init__(self, iterations, **kwargs):
         self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
-        return super().__save_init__(iterations)
-
-    def __save_value__(self, loss, index):
+        return super().__save_init__(iterations, **kwargs)
+    
+    def __save_value__(self, index, **kwargs):
         self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
-        return super().__save_value__(loss, index)
-
+        return super().__save_value__(index, **kwargs)
+        
 
 class SubspaceGD(__optim__):
     def __init__(self):
@@ -139,13 +139,13 @@ class SubspaceGD(__optim__):
         lr = self.params[1]
         return super().__update__(lr*dk)  
 
-    def __save_init__(self, iterations):
+    def __save_init__(self, iterations,**kwargs):
         self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
-        return super().__save_init__(iterations)
+        return super().__save_init__(iterations,**kwargs)
 
-    def __save_value__(self, loss, index):
+    def __save_value__(self,index,**kwargs):
         self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
-        return super().__save_value__(loss, index)      
+        return super().__save_value__(index,**kwargs)      
 
 class AcceleratedGD(__optim__):
     def __init__(self):
@@ -174,13 +174,13 @@ class AcceleratedGD(__optim__):
         self.xk.grad = grad
         return
     
-    def __save_init__(self, iterations):
+    def __save_init__(self, iterations,**kwargs):
         self.save_values[("grad_values","min")] = torch.zeros(iterations,dtype = DTYPE)
-        return super().__save_init__(iterations)
+        return super().__save_init__(iterations,**kwargs)
 
-    def __save_value__(self, loss, index):
+    def __save_value__(self, index,**kwargs):
         self.save_values[("grad_values","min")][index] = torch.linalg.norm(self.xk.grad).item()
-        return super().__save_value__(loss, index)
+        return super().__save_value__(index,**kwargs)
 
 
 

@@ -16,7 +16,7 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 
-def run(config_name):
+def run(config_name,save_solution = False):
   if not os.path.exists(os.path.join(CONFIGPATH,config_name)):
     raise ValueError("No config")
 
@@ -76,6 +76,8 @@ def run(config_name):
 
 
   # 最後の反復の結果だけ保存
+  if save_solution:
+    torch.save(solver.xk,os.path.join(savepath,"solution.pth"))
   fvalues = None
   timevalues = None
   for k,v in solver.save_values.items():
@@ -112,4 +114,4 @@ def run(config_name):
 
 if __name__ == "__main__":
   config_name = "config.json"
-  run(config_name)
+  run(config_name,save_solution=True)

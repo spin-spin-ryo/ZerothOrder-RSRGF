@@ -5,25 +5,27 @@ import json
 from main import run
 
 
-problem = "subspace-norm local"
+problem = "regularized LinearRegression"
 property = None
-dim = 1000000
+dim = None
 rank = None
-subspace = 1000
+subspace = None
 ord = 1
-coef = None
+coef = 1e-5
+data_name = "E2006"
 
 
-# lrs = [1e-8,1e-9,1e-10,1e-11,1e-12]
-lrs = [10,1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
+# lrs = [10,1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
+# lrs = [1e-9,1e-10,1e-11,1e-12,1e-13]
+lrs = [1e-6]
 
 # solver_name = "RGF"
 solver_name = "proposed"
 mus = [1e-8]
-sample_sizes = [10]
-reduced_dims = [10,100]
-iterations = 10000
-interval = 100000
+sample_sizes = [1]
+reduced_dims = [100]
+iterations = 500000
+interval = 50000
 trial_numbers = 1
 count = 0
 data_num = None
@@ -45,7 +47,8 @@ for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sam
             "ord":ord,
             "subspace":subspace,
             "coef":coef,
-            "fused": fused_flag
+            "fused": fused_flag,
+            "data-name":data_name
         }
         ,
         "solver":solver_name,

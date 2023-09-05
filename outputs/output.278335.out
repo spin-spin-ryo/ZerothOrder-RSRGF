@@ -1,3 +1,0 @@
-{'problem': 'piecewise-linear', 'properties': {'dim': 1000}, 'solver': 'RGF', 'params': {'lr': 1e-05, 'sample_size': 10, 'mu': 1e-08, 'step_schedule': 'constant'}, 'iterations': 500000, 'interval': 1000, 'trial_numbers': 1}
-fvalues:2.3315794402129892
-time_values:1304.9619140625

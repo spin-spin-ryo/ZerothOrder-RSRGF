@@ -68,6 +68,27 @@ class subspace_norm(Function):
         self.params[i] = self.params[i].to(torch.int64)
     return  
 
+class LinearRegression(Function):
+  def __call__(self, x):
+    A = self.params[0]
+    b = self.params[1]
+    return torch.linalg.norm(A@x - b)**2
+
+class NMF(Function):
+  def __call__(self, x):
+    W = self.params[0]
+    height,width = W.shape
+    rank = self.params[1]
+    U = x[:height*rank].reshape(height,rank)
+    V = x[height*rank:].reshape(rank,width)
+    return torch.linalg.norm(U@V - W)**2
+
+  
+  def SetDtype(self, dtype):
+    super().SetDtype(dtype)
+    self.params[1] = self.params[1].to(torch.int32)
+    return 
+
 class rosenbrock(Function):
   def __call__(self,x):
     super().__call__(x)
@@ -84,7 +105,7 @@ class regularizedfunction(Function):
     l = self.params[-2]
     A = self.params[-1]
     if A is not None:
-      return self.f(x) + l*torch.linalg.norm(A@x,ord = p)
+      return self.f(x) + l*torch.linalg.norm(A(x),ord = p)
     else:
       return self.f(x) + l*torch.linalg.norm(x,ord = p)
   
