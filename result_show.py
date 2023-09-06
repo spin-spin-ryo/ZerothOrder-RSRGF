@@ -22,9 +22,10 @@ solver_prop_frame =None
 solver_prop_dict = {}
 
 pages = []
+buttons = {}
 notebook = None
-
 option_entries = {}
+option_window = None
 
 def initialize():
     global problem_prop_frame
@@ -36,6 +37,17 @@ def initialize():
     problem_prop_comboboxes = []
     problem_prop_dict = {}
     CURRENT_PATH = RESULTPATH
+
+    global notebook
+    if notebook is not None:
+        notebook.destroy()
+    global pages
+    pages = []
+    
+    global buttons
+    for k in buttons.keys():
+        buttons[k].destroy()
+    buttons = {}
 
 class problem_prop_cmbbox(prop_cmbbox):
     def __init__(self, parent, values, state, key, index):
@@ -63,39 +75,57 @@ class problem_prop_cmbbox(prop_cmbbox):
         onepage = page(notebook,solver_dirs,solver_prop_dict)
         onepage.add(notebook,text = "tab1")
         global pages
+        global buttons
         pages = [onepage]
         notebook.pack()
+
         add_button_command = lambda : add_page(notebook,solver_dirs,solver_prop_dict)
         add_button =  tk.Button(root,text = "追加",command=add_button_command)
         add_button.pack()
+        buttons["add_button"] = add_button
+        remove_button = tk.Button(root,text = "削除", command = remove_button_command)
+        remove_button.pack()
+        buttons["remove_button"] = remove_button
         option_button = tk.Button(root,text="オプション",command=open_option_window)
         option_button.pack()
+        buttons["option_button"] = option_button
         exec_button = tk.Button(root,text = "実行",command=execute_plot)
         exec_button.pack()
+        buttons["exec_button"] = exec_button
         return
 
 def open_option_window():
     global root
-    new_window = tk.Toplevel(root)
+    global option_window
+    if option_window is None:
+        option_window = tk.Toplevel(root)
+    else:
+        option_window.lift()
+        return
     global option_entries
-    entry_start = generate_entry(new_window,"start")
-    entry_end = generate_entry(new_window,"end")
-    entry_xscale = generate_entry(new_window,"xscale")
-    entry_yscale = generate_entry(new_window,"yscale")
+    entry_start = generate_entry(option_window,"start")
+    entry_end = generate_entry(option_window,"end")
+    entry_start.insert(0,"0")
+    entry_end.insert(0,"-1")
+    entry_xscale = generate_entry(option_window,"xscale")
+    entry_yscale = generate_entry(option_window,"yscale")
 
     option_entries[("start",int)] = entry_start
     option_entries[("end",int)] = entry_end
     option_entries[("xscale",str)] = entry_xscale
     option_entries[("yscale",str)] = entry_yscale
 
-
-    
+def remove_button_command():
+    global pages
+    global notebook
+    notebook.forget(len(pages)-1)
+    pages.pop()
 
 
 def add_page(notebook,solver_dirs,solver_prop_dict):
     global pages
     page_ =  page(notebook,solver_dirs,solver_prop_dict)
-    page_.add(notebook,text = "tab1")
+    page_.add(notebook,text = f"tab{len(pages) + 1}")
     pages.append(page_)
 
 def get_options():

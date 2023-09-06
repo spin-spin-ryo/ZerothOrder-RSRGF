@@ -47,28 +47,30 @@ class page:
         self.comboxes = []
         self.prop_dict = {}
         self.path = ""
-        self.flag = False
-    
+        self.sub_frame = None
+        
     def add(self,notebook,text):
         notebook.add(self.main_frame,text = text)
     
+    
     def generate_cmbboxes(self,event):
-        if self.flag:
-            return
-        self.flag = True
-        sub_frame = tk.Frame(self.main_frame)
+        if self.sub_frame is not None:
+            self.sub_frame.destroy()
+            self.sub_frame = None
+            self.prop_dict = {}
+        self.sub_frame = tk.Frame(self.main_frame)
         solver_name = self.solver_cmbbox.get()
         solver_params = self.solver_prop_dict[solver_name]
         for key in solver_params.keys():
             self.prop_dict[key] = ""
         count = 0
         for k,v in solver_params.items():
-            tk.Label(sub_frame,text=k).grid(row = count,column=0)
-            cmbbox = solver_prop_cmbbox(sub_frame,values=v,state="readonly",key = k,index = count)
+            tk.Label(self.sub_frame,text=k).grid(row = count,column=0)
+            cmbbox = solver_prop_cmbbox(self.sub_frame,values=v,state="readonly",key = k,index = count)
             cmbbox.bind(self.prop_dict)
             cmbbox.grid(row = count,column=1)
             count += 1
-        sub_frame.pack()
+        self.sub_frame.pack()
         return
 
     def get_path(self,current_path):

@@ -69,11 +69,13 @@ def get_best_result_path(init_dir,prop_dict):
             if v != "" and v != now_prop_dict[k]:
                 ok_flag = False
         if ok_flag:
+            now_val = get_min_val_from_result(os.path.join(init_dir,dir_name,"result.json"))
+            if np.isnan(now_val):
+                continue
             if min_val is None:
-                min_val = get_min_val_from_result(os.path.join(init_dir,dir_name,"result.json"))
+                min_val = now_val
                 min_val_dir = dir_name
             else:
-                now_val = get_min_val_from_result(os.path.join(init_dir,dir_name,"result.json"))
                 if now_val < min_val:
                     min_val = now_val
                     min_val_dir = dir_name
