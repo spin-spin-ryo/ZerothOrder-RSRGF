@@ -69,7 +69,7 @@ def get_best_result_path(init_dir,prop_dict):
             if v != "" and v != now_prop_dict[k]:
                 ok_flag = False
         if ok_flag:
-            now_val = get_min_val_from_result(os.path.join(init_dir,dir_name,"result.json"))
+            now_val,_ = get_min_val_from_result(os.path.join(init_dir,dir_name,"result.json"))
             if np.isnan(now_val):
                 continue
             if min_val is None:
@@ -119,7 +119,7 @@ def plot_result(target_pathes,*args):
     end = -1
     xscale = ""
     yscale = ""
-    full_line = 1
+    full_line = 100
     #option関連
     for k,v in args[0].items():
         if k == "start":

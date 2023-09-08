@@ -107,6 +107,7 @@ def open_option_window():
     entry_end = generate_entry(option_window,"end")
     entry_start.insert(0,"0")
     entry_end.insert(0,"-1")
+    entry_interval.insert(0,"100")
     entry_xscale = generate_entry(option_window,"xscale")
     entry_yscale = generate_entry(option_window,"yscale")
     entry_interval = generate_entry(option_window,"full_line")
