@@ -68,7 +68,14 @@ def run(config_name,save_solution = False):
     for k,v in values_dict.items():
       logger.info(f"{k}:{v}")
     save_result_json(os.path.join(savepath,"result.json"),values_dict,iterations)
-
+    count = count_files(savepath,r"fvalues.*\.pth")
+    if count == 0:
+      suffix = ""
+    else:
+      suffix = str(count)
+    for k,v in solver.save_values.items():
+      torch.save(v,os.path.join(savepath,k[0]+suffix+".pth"))
+  
   # 最後の反復の結果だけ保存
   if save_solution:
     torch.save(solver.xk,os.path.join(savepath,"solution.pth"))
@@ -80,7 +87,6 @@ def run(config_name,save_solution = False):
   else:
     suffix = str(count)
   for k,v in solver.save_values.items():
-    torch.save(v,os.path.join(savepath,k[0]+suffix+".pth"))
     if k[0] == "fvalues":
       fvalues = v
     if k[0] == "time_values":

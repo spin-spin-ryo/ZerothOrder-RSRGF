@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -p v
+#SBATCH -p p
 #SBATCH --gres=gpu:1
 #SBATCH -N 1
 #SBATCH -o /home/u00786/Research/optimization/outputs/output.%j.out

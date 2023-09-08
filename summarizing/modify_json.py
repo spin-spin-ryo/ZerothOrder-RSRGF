@@ -44,6 +44,7 @@ def save_result_json(save_path,values_dict,iteration):
         with open(save_path,"r") as f:
             result_json = json.load(f)
         
+        
         for index in range(len(result_json["result"])):
             if result_json["result"][index]["iteration"] == iteration:
                 result_json["result"][index]["save_values"].append(values_dict)
@@ -54,14 +55,17 @@ def save_result_json(save_path,values_dict,iteration):
                 std = np.std(np.array(optim_values))
                 result_json["result"][index]["mean"] = mean
                 result_json["result"][index]["std"] = std
+                with open(save_path,"w") as f2:
+                    json.dump(result_json,f2,indent=4)
+                return
 
     else:
-        mean = values_dict["fvalues"]
-        std = 0
         result_json ={
                         "result":[]
                     } 
-
+        
+    mean = values_dict["fvalues"]
+    std = 0
     each_json = {
                     "iteration":iteration,
                     "save_values":[values_dict],
@@ -69,7 +73,7 @@ def save_result_json(save_path,values_dict,iteration):
                     "std":std
                 }
 
-    result_json.append(each_json)
+    result_json["result"].append(each_json)
     with open(save_path,"w") as f2:
         json.dump(result_json,f2,indent=4)
 
