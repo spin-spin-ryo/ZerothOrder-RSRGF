@@ -109,11 +109,14 @@ def open_option_window():
     entry_end.insert(0,"-1")
     entry_xscale = generate_entry(option_window,"xscale")
     entry_yscale = generate_entry(option_window,"yscale")
+    entry_interval = generate_entry(option_window,"full_line")
+
 
     option_entries[("start",int)] = entry_start
     option_entries[("end",int)] = entry_end
     option_entries[("xscale",str)] = entry_xscale
     option_entries[("yscale",str)] = entry_yscale
+    option_entries[("full_line",int)] = entry_interval
 
 def remove_button_command():
     global pages

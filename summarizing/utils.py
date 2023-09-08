@@ -103,6 +103,7 @@ def plot_result(target_pathes,*args):
     end = -1
     xscale = ""
     yscale = ""
+    full_line = 1
     #option関連
     for k,v in args[0].items():
         if k == "start":
@@ -113,12 +114,16 @@ def plot_result(target_pathes,*args):
             xscale = v
         if k == "yscale":
             yscale = v
+        if k == "full_line":
+            full_line = v
 
     
-    plt.tight_layout()
     for p,v in zip(target_pathes,fvalues):
         print(p)
-        plt.plot(np.arange(len(v))[start:end],v[start:end],label = p)
+        if "proposed" in p:
+            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = p)
+        else:
+            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = p,linestyle = "dotted")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
     if xscale != "":
         plt.xscale("log")
