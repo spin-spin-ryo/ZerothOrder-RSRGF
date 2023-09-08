@@ -1,10 +1,6 @@
-from sklearn.datasets import load_svmlight_file
-import torch
-import pickle
-from utils import convert_coo_torch
+import re
+test_list = ["fvalues.pth","fvalues0.pth","aaaa.pth"]
+pattern = r"fvalues.*\.pth"
 
-path_dataset = "./data/NMF/movie_100k.pth"
-with open(path_dataset,"rb") as data:
-    U = pickle.load(data)
-
-print(U)
+for file_name in test_list:
+    print(re.match(pattern,file_name))

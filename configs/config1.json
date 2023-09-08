@@ -1,25 +1,26 @@
 {
-    "problem": "regularized NMF",
+    "problem": "regularized LinearRegression",
     "properties": {
         "dim": null,
         "data_num": null,
-        "rank": 50,
+        "rank": null,
         "property": null,
         "ord": 1,
         "subspace": null,
-        "coef": 1e-05,
+        "coef": 1e-06,
         "fused": false,
-        "data-name": "movie"
+        "data-name": "E2006",
+        "bias": true
     },
     "solver": "RGF",
     "params": {
-        "lr": 1e-10,
+        "lr": 1e-05,
         "reduced_dim": null,
         "sample_size": 1,
         "mu": 1e-08,
         "step_schedule": "constant"
     },
-    "iterations": 10000,
-    "interval": 5000,
+    "iterations": 1000,
+    "interval": 10000,
     "trial_numbers": 1
 }

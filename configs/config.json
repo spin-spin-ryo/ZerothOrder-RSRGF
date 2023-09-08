@@ -1,23 +1,23 @@
 {
-    "problem":"NMF",
+    "problem":"softmax",
     "properties" : 
     {
         "dim" : null,
         "data-num":null,
-        "rank":50,
+        "rank":null,
         "property":null,
         "ord":null,
         "coef":null,
         "fused":false,
-        "data-name":"movie"
+        "data-name":"Scotus"
     }
     ,
     "solver":"AGD",
     "params":
     {
-        "lr" : 1e-6
+        "lr" : 1
     },
-    "iterations":50000,
+    "iterations":100,
     "interval":10000,
     "trial_numbers":1
 }

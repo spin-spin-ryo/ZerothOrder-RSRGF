@@ -9,6 +9,7 @@ from generate_problem import generate
 from get_solver import get_solver
 import sys
 import logging
+from summarizing.modify_json import get_element_json,save_result_json,count_files
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,30 +59,28 @@ def run(config_name,save_solution = False):
   savepath = os.path.join(RESULTPATH,problem,problem_dir,solver_name,solver_dir)
   logger.info(savepath)
   os.makedirs(savepath,exist_ok= True)
-  result_json = {"result":[]}
   for i in range(trial_numbers):
     x = x0.clone().detach()
     x.requires_grad_(True)
     solver.__iter__(func,x,params,iterations,savepath,interval)
-    result_dict = {}
     logger.info(f"{iterations}")
-    for k,v in solver.save_values.items():
-      if k[1] == "min":
-        result_dict[k[0]] = torch.min(v).item()
-      elif k[1] == "max":
-        result_dict[k[0]] = torch.max(v).item()
-    for k,v in result_dict.items():
+    values_dict = get_element_json(solver.save_values)
+    for k,v in values_dict.items():
       logger.info(f"{k}:{v}")
-    result_json["result"].append(result_dict)
-
+    save_result_json(os.path.join(savepath,"result.json"),values_dict,iterations)
 
   # 最後の反復の結果だけ保存
   if save_solution:
     torch.save(solver.xk,os.path.join(savepath,"solution.pth"))
   fvalues = None
   timevalues = None
+  count = count_files(savepath,r"fvalues.*\.pth")
+  if count == 0:
+    suffix = ""
+  else:
+    suffix = str(count)
   for k,v in solver.save_values.items():
-    torch.save(v,os.path.join(savepath,k[0]+".pth"))
+    torch.save(v,os.path.join(savepath,k[0]+suffix+".pth"))
     if k[0] == "fvalues":
       fvalues = v
     if k[0] == "time_values":
@@ -95,18 +94,6 @@ def run(config_name,save_solution = False):
   plt.savefig(os.path.join(savepath,"result.png"))
   plt.savefig(os.path.join(savepath,"result.pdf"))
   plt.close()
-  min_values = []
-  for each_result in result_json['result']:
-    for k,v in each_result.items():
-      if k == "fvalues":
-        min_values.append(v)
-  
-  min_values = np.array(min_values)
-  result_json["mean"] = min_values.mean()
-  result_json["std"] = min_values.std()
-  with open(os.path.join(savepath,"result.json"),"w") as f:
-    json.dump(result_json,f,indent=4)
-    f.close()
   
   
 

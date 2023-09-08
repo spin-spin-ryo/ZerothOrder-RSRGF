@@ -84,9 +84,25 @@ def get_best_result_path(init_dir,prop_dict):
 
 def get_min_val_from_result(file_name):
     with open(file_name) as f:
-        json_dict = json.load(f)
-    return json_dict["result"][0]["fvalues"]
+        result_json= json.load(f)
+    
+    mean_val = None
+    min_val = None
+    for each_json in result_json["result"]:
+        if mean_val is None:
+            mean_val = each_json["mean"]
+        else:
+            if mean_val > each_json["mean"]:
+                mean_val = each_json["mean"]
 
+        for values_dict in each_json["save_values"]:
+            if min_val is None:
+                min_val = values_dict["fvalues"]
+            else:
+                if min_val > values_dict["fvalues"]:
+                    min_val = values_dict["fvalues"]
+
+    return min_val,mean_val
 
 def modify_local2global(path):
     path = path.replace(";",":")

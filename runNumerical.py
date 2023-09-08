@@ -10,26 +10,27 @@ property = None
 dim = None
 rank = None
 subspace = None
+bias = True
 ord = 1
-coef = 1e-5
+coef = 1e-6
 data_name = "E2006"
+data_num = None
+fused_flag = True
 
-
-# lrs = [10,1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8]
-# lrs = [1e-9,1e-10,1e-11,1e-12,1e-13]
-lrs = [1e-6]
+# lrs = [1e-6]
+lrs = [1e-3]
 
 # solver_name = "RGF"
 solver_name = "proposed"
+# solver_name = "AGD"
+
 mus = [1e-8]
 sample_sizes = [1]
 reduced_dims = [100]
-iterations = 500000
-interval = 50000
+iterations = 1000000
+interval = 10000
 trial_numbers = 1
 count = 0
-data_num = None
-fused_flag = False
 step_schedule = "constant"
 
 
@@ -48,7 +49,8 @@ for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sam
             "subspace":subspace,
             "coef":coef,
             "fused": fused_flag,
-            "data-name":data_name
+            "data-name":data_name,
+            "bias":bias
         }
         ,
         "solver":solver_name,

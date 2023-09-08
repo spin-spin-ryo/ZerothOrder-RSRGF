@@ -25,6 +25,11 @@ def generate(mode,properties):
         f,x0 = generate_LinearRegression(properties)
     elif mode == "NMF":
         f,x0 = generate_nmf(properties)
+    elif mode == "softmax":
+        f,x0 = generate_softmax(properties)
+    elif mode == "regularized softmax":
+        f,x0 = generate_softmax(properties)
+        f = generate_regularized(f,properties)
     elif mode == "regularized LinearRegression":
         f,x0 = generate_LinearRegression(properties)
         f = generate_regularized(f,properties)
@@ -174,6 +179,7 @@ def generate_regularized(f,properties):
     
 def generate_LinearRegression(properties,local = False):
     data_name = properties["data-name"]
+    bias = bool(properties["bias"])
     if data_name == "E2006":
         from sklearn.datasets import load_svmlight_file
         from utils import convert_coo_torch
@@ -183,6 +189,8 @@ def generate_LinearRegression(properties,local = False):
         X = convert_coo_torch(X)
         y = torch.from_numpy(y)
         dim = X.shape[1]
+        if bias:
+            dim += 1
         data_num = X.shape[0]
         if not local:
             x0 = torch.zeros(dim)
@@ -191,6 +199,8 @@ def generate_LinearRegression(properties,local = False):
             x0 = torch.load(path_local_init)
     elif data_name == "random":
         dim = properties["dim"]
+        if bias:
+            dim += 1
         data_num = properties["data-num"]
         X = torch.randn(data_num,dim)
         y = torch.randn(data_num)
@@ -200,7 +210,7 @@ def generate_LinearRegression(properties,local = False):
         raise ValueError("No matching data name.")
 
     params = [X,y]
-    f = LinearRegression(params=params)
+    f = LinearRegression(params=params,bias=bias)
     return f,x0
 
 def generate_nmf(properties,local = False):
@@ -220,13 +230,33 @@ def generate_nmf(properties,local = False):
     if not local:
         x0 = torch.ones(dim)
     else:
-        nmf_init_path = "."
+        nmf_init_path = "./data/NMF/solution_disturb.pth"
         x0 = torch.load(nmf_init_path)
     
     params = [W,torch.tensor(rank)]
     f = NMF(params=params)
     return f,x0
 
+def generate_softmax(properties):
+    data_name = properties["data-name"]
+    if data_name == "Scotus":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/scotus_lexglue_tfidf_train.svm.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+        y=F.one_hot(y)
+        data_num,feature_num = X.shape
+        _,class_num = y.shape
+        dim = feature_num*class_num + class_num
+        x0 = torch.zeros(dim)
+    elif data_name == "random":
+        return
+    params = [X,y]
+    f = softmax(params)
+    return f,x0
 
-
-
+        

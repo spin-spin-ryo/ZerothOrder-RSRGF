@@ -13,13 +13,18 @@ class Function:
   
   def SetDtype(self,dtype):
     for i in range(len(self.params)):
-      if self.params[i] is not None:
+      try:
         self.params[i] = self.params[i].to(dtype)
+      except:
+        print(type(self.params[i]))
     return
+  
   def SetDevice(self,device):
     for i in range(len(self.params)):
-      if self.params[i] is not None:
+      try:
         self.params[i] = self.params[i].to(device)
+      except:
+        print(type(self.params[i]))
     return
 
 class QuadraticFunction(Function):
@@ -56,6 +61,21 @@ class logistic(Function):
     a = X@x
     return torch.mean(torch.log(1 + torch.exp(-y*a)))
 
+class softmax(Function):
+  def __call__(self,x,eps = 1e-12):
+    X = self.params[0]
+    y = self.params[1]
+    data_num,feature_num = X.shape
+    _,class_num = y.shape
+    W = x[:feature_num*class_num].reshape(feature_num,class_num)
+    Z = X@W
+    sum_Z = torch.logsumexp(Z,1)
+    sum_Z = sum_Z.unsqueeze(1)
+    out1 = -Z + eps + sum_Z
+    return torch.mean(torch.sum(out1*y,dim = 1))
+
+
+
 class subspace_norm(Function):
   def __call__(self,x):
     r = self.params[0]
@@ -69,11 +89,17 @@ class subspace_norm(Function):
     return  
 
 class LinearRegression(Function):
+  def __init__(self, params=[],bias = False):
+    super().__init__(params)
+    self.bias = bias
+
   def __call__(self, x):
     A = self.params[0]
     b = self.params[1]
-    return torch.linalg.norm(A@x - b)**2
-
+    if not self.bias:
+      return torch.linalg.norm(A@x - b)**2
+    else:
+      return torch.linalg.norm(A@x[:-1] + x[-1] - b)**2
 class NMF(Function):
   def __call__(self, x):
     W = self.params[0]

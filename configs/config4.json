@@ -1,25 +1,25 @@
 {
-    "problem": "regularized NMF",
+    "problem": "regularized softmax",
     "properties": {
         "dim": null,
         "data_num": null,
-        "rank": 50,
+        "rank": null,
         "property": null,
         "ord": 1,
         "subspace": null,
-        "coef": 1e-05,
+        "coef": 1e-06,
         "fused": false,
-        "data-name": "movie"
+        "data-name": "Scotus"
     },
-    "solver": "RGF",
+    "solver": "proposed",
     "params": {
-        "lr": 1e-13,
-        "reduced_dim": null,
+        "lr": 0.1,
+        "reduced_dim": 100,
         "sample_size": 1,
         "mu": 1e-08,
         "step_schedule": "constant"
     },
-    "iterations": 10000,
-    "interval": 5000,
+    "iterations": 1000000,
+    "interval": 10000,
     "trial_numbers": 1
 }
