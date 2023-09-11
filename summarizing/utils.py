@@ -117,6 +117,7 @@ def plot_result(target_pathes,*args):
     fvalues = []
     for target_path in target_pathes:
         fvalues_files = find_files(target_path,r"fvalues.*\.pth")
+        print(fvalues_files)
         best_file_name = fvalues_files[0]
         min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
         for f in fvalues_files[1:]:

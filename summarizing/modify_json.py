@@ -81,7 +81,7 @@ def count_files(init_dir,pattern):
     list_dir = os.listdir(init_dir)
     count = 0
     for file_name in list_dir:
-        res = re.match(pattern,file_name)
+        res = re.fullmatch(pattern,file_name)
         if res:
             count +=1
     return count
@@ -90,7 +90,7 @@ def find_files(init_dir,pattern):
     list_dir = os.listdir(init_dir)
     output_files = []
     for file_name in list_dir:
-        res = re.match(pattern,file_name)
+        res = re.fullmatch(pattern,file_name)
         if res:
             output_files.append(file_name)
     return output_files
