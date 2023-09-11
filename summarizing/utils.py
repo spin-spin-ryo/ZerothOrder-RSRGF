@@ -3,7 +3,7 @@ import json
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
-from summarzing.modify_json import find_files
+from summarizing.modify_json import find_files
 
 SLASH = os.path.join("a","b")[1:-1]
 
