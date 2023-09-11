@@ -12,15 +12,15 @@
         "data-name": "random-100-100000",
         "bias": true
     },
-    "solver": "proposed",
+    "solver": "RGF",
     "params": {
-        "lr": 0.001,
-        "reduced_dim": 10,
+        "lr": 1e-09,
+        "reduced_dim": null,
         "sample_size": 1,
         "mu": 1e-12,
         "step_schedule": "constant"
     },
-    "iterations": 100,
+    "iterations": 50000,
     "interval": 100000,
     "trial_numbers": 1
 }

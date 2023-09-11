@@ -1,26 +1,26 @@
 {
-    "problem": "regularized LinearRegression",
+    "problem": "subspace-norm local",
     "properties": {
-        "dim": null,
+        "dim": 1000000,
         "data_num": null,
         "rank": null,
         "property": null,
         "ord": 1,
-        "subspace": null,
-        "coef": 1e-06,
-        "fused": false,
-        "data-name": "random-100-100000",
-        "bias": true
+        "subspace": 1000,
+        "coef": null,
+        "fused": null,
+        "data-name": null,
+        "bias": null
     },
-    "solver": "proposed",
+    "solver": "RGF",
     "params": {
-        "lr": 0.001,
-        "reduced_dim": 100,
+        "lr": 1e-12,
+        "reduced_dim": null,
         "sample_size": 1,
-        "mu": 1e-08,
+        "mu": 1e-12,
         "step_schedule": "constant"
     },
-    "iterations": 100,
+    "iterations": 500000,
     "interval": 100000,
     "trial_numbers": 1
 }

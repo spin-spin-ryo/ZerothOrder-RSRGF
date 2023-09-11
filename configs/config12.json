@@ -14,13 +14,13 @@
     },
     "solver": "proposed",
     "params": {
-        "lr": 0.0001,
+        "lr": 1e-05,
         "reduced_dim": 10,
         "sample_size": 1,
         "mu": 1e-06,
         "step_schedule": "constant"
     },
-    "iterations": 100,
+    "iterations": 50000,
     "interval": 100000,
     "trial_numbers": 1
 }

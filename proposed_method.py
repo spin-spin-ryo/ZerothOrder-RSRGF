@@ -64,7 +64,3 @@ class proposed(__optim__):
                 time_values = ("max",time.time() - self.start_time),
                 norm_dir = ("iter",torch.linalg.norm(dk).item()))
         return
-    
-    
-
-    
