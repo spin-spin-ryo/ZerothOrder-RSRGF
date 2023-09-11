@@ -3,6 +3,7 @@ import json
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
+SLASH = os.path.join("a","b")[1:-1]
 
 def get_dir_from_dict(prop_dict):
     output_path = ""
@@ -106,7 +107,7 @@ def get_min_val_from_result(file_name):
 
 def modify_local2global(path):
     path = path.replace(";",":")
-    path = path.replace("\\","/")
+    path = path.replace(SLASH,"/")
     return path
 
 

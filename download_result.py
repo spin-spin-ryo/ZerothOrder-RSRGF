@@ -9,6 +9,7 @@ USERNAME = "u00786"
 print("enter your ssh password")
 PASSWORD = getpass('your password: ')
 KEYPATH = "C:\\Users\\19991\\.ssh\\ist"
+SLASH = os.path.join("a,b")[1:-1]
 
 def ssh_connect():
     client = paramiko.client.SSHClient()
@@ -57,7 +58,7 @@ def sftp_download_dir(remote_file,local_file,extension = ""):
                             file_list.append(( dir_name,file_name,modify_dt))
             
             for dir_name,file_name,modify_dt in file_list:
-                local_dir_name = dir_name.replace("/","\\").replace(":",";")
+                local_dir_name = dir_name.replace("/",SLASH).replace(":",";")
                 os.makedirs(os.path.join(local_file,local_dir_name),exist_ok=True)
                 log_path = os.path.join(local_file,local_dir_name,file_name+".txt")
                 if os.path.exists(log_path):
