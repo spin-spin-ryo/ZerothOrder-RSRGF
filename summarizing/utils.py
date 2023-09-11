@@ -3,6 +3,8 @@ import json
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
+from summarzing.modify_json import find_files
+
 SLASH = os.path.join("a","b")[1:-1]
 
 def get_dir_from_dict(prop_dict):
@@ -114,7 +116,15 @@ def modify_local2global(path):
 def plot_result(target_pathes,*args):
     fvalues = []
     for target_path in target_pathes:
-        fvalues.append(torch.load(os.path.join(target_path,"fvalues.pth")))
+        fvalues_files = find_files(target_path,r"fvalues.*\.pth")
+        best_file_name = fvalues_files[0]
+        min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
+        for f in fvalues_files[1:]:
+            temp_min_value = torch.min(torch.load(os.path.join(target_path,f)))
+            if temp_min_value < min_value:
+                min_value = temp_min_value
+                best_file_name = f
+        fvalues.append(torch.load(os.path.join(target_path,best_file_name)))
     
     start = 0
     end = -1

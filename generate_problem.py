@@ -197,13 +197,20 @@ def generate_LinearRegression(properties,local = False):
         else:
             path_local_init = "./data/LinearRegression/E2006_init.pth"
             x0 = torch.load(path_local_init)
-    elif data_name == "random":
-        dim = properties["dim"]
+    elif data_name == "random-100-10000":
+        dim = 10000
         if bias:
             dim += 1
-        data_num = properties["data-num"]
-        X = torch.randn(data_num,dim)
-        y = torch.randn(data_num)
+        X = torch.load("./data/LinearRegression/random-100-10000-X.pth")
+        y = torch.load("./data/LinearRegression/random-100-10000-y.pth")
+        x0 = torch.zeros(dim)
+    
+    elif data_name == "random-100-100000":
+        dim = 100000
+        if bias:
+            dim += 1
+        X = torch.load("./data/LinearRegression/random-100-100000-X.pth")
+        y = torch.load("./data/LinearRegression/random-100-100000-y.pth")
         x0 = torch.zeros(dim)
         
     else:

@@ -5,31 +5,31 @@ import json
 from main import run
 
 
-problem = "subspace-norm local"
+problem = "regularized LinearRegression"
 property = None
-dim = 1000000
+dim = None
 rank = None
-subspace = 100
-bias = None
+subspace = None
+bias = True
 ord = 1
-coef = None
-data_name = None
+coef = 1e-6
+data_name = "random-100-100000"
 data_num = None
-fused_flag = None
+fused_flag = False
 
-lrs = [1e-3]
+lrs = [1e-3,1e-4,1e-5]
 # lrs = [1e-3]
 
-solver_name = "RGF"
-# solver_name = "proposed"
+# solver_name = "RGF"
+solver_name = "proposed"
 # solver_name = "AGD"
 
-mus = [1e-8]
+mus = [1e-6,1e-8,1e-12]
 sample_sizes = [1]
-reduced_dims = [None]
+reduced_dims = [100,10,50]
 iterations = 100
-interval = 10000
-trial_numbers = 10
+interval = 100000
+trial_numbers = 1
 count = 0
 step_schedule = "constant"
 

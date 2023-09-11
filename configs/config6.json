@@ -1,5 +1,5 @@
 {
-    "problem": "regularized softmax",
+    "problem": "regularized LinearRegression",
     "properties": {
         "dim": null,
         "data_num": null,
@@ -9,17 +9,18 @@
         "subspace": null,
         "coef": 1e-06,
         "fused": false,
-        "data-name": "Scotus"
+        "data-name": "random-100-100000",
+        "bias": true
     },
     "solver": "proposed",
     "params": {
-        "lr": 0.0001,
-        "reduced_dim": 100,
+        "lr": 0.001,
+        "reduced_dim": 50,
         "sample_size": 1,
-        "mu": 1e-08,
+        "mu": 1e-06,
         "step_schedule": "constant"
     },
-    "iterations": 10000,
-    "interval": 10000,
+    "iterations": 100,
+    "interval": 100000,
     "trial_numbers": 1
 }
