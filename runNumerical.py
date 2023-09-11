@@ -27,6 +27,7 @@ solver_name = "proposed"
 mus = [1e-8]
 sample_sizes = [1]
 reduced_dims = [100]
+heuristic_intervals = [10,100]
 iterations =500000
 interval = 100000
 trial_numbers = 1
@@ -35,7 +36,7 @@ step_schedule = "constant"
 
 
 
-for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sample_sizes):
+for lr, reduced_dim,mu,sample_size,sample_interval in itertools.product(lrs,reduced_dims,mus,sample_sizes,heuristic_intervals):
     
     config_json = {
         "problem":problem,
@@ -60,7 +61,8 @@ for lr, reduced_dim,mu,sample_size in itertools.product(lrs,reduced_dims,mus,sam
             "reduced_dim": reduced_dim,
             "sample_size":sample_size,
             "mu":mu,
-            "step_schedule":step_schedule
+            "step_schedule":step_schedule,
+            "interval":sample_interval
         },
         "iterations":iterations,
         "interval":interval,
