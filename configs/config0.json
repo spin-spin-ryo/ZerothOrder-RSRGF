@@ -12,15 +12,16 @@
         "data-name": null,
         "bias": null
     },
-    "solver": "proposed",
+    "solver": "proposed-heuristic",
     "params": {
-        "lr": 9e-08,
+        "lr": 1e-07,
         "reduced_dim": 100,
         "sample_size": 1,
         "mu": 1e-08,
-        "step_schedule": "constant"
+        "step_schedule": "constant",
+        "interval": 10
     },
-    "iterations": 500000,
+    "iterations": 200000,
     "interval": 100000,
     "trial_numbers": 1
 }

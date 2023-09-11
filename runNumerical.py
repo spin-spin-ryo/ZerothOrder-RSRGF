@@ -17,18 +17,19 @@ data_name = None
 data_num = None
 fused_flag = None
 
-lrs = [9e-8]
+lrs = [1e-8]
 # lrs = [1e-3]
 
 # solver_name = "RGF"
-solver_name = "proposed"
+# solver_name = "proposed"
+solver_name = "proposed-heuristic"
 # solver_name = "AGD"
 
 mus = [1e-8]
 sample_sizes = [1]
 reduced_dims = [100]
 heuristic_intervals = [10,100]
-iterations =500000
+iterations =200000
 interval = 100000
 trial_numbers = 1
 count = 0
