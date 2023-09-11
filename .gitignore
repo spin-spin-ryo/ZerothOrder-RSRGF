@@ -164,3 +164,4 @@ results/
 *.ipynb
 outputs/
 *.sh
+environments.py

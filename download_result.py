@@ -3,13 +3,13 @@ import os
 from paramiko.ssh_exception import BadHostKeyException,BadAuthenticationType,AuthenticationException,SSHException
 import stat
 from getpass import getpass
+from environments import KEYPATH
 
 HOSTNAME = "157.82.22.26"
 USERNAME = "u00786"
 print("enter your ssh password")
 PASSWORD = getpass('your password: ')
-KEYPATH = "C:\\Users\\19991\\.ssh\\ist"
-SLASH = os.path.join("a,b")[1:-1]
+SLASH = os.path.join("a","b")[1:-1]
 
 def ssh_connect():
     client = paramiko.client.SSHClient()
@@ -71,7 +71,7 @@ def sftp_download_dir(remote_file,local_file,extension = ""):
                         with open(log_path,"w") as f:
                             f.write(str(modify_dt))
                 else:
-                    print(file_name)
+                    print(os.path.join(local_file,local_dir_name,file_name))
                     sftp.get(remote_file + "/" + dir_name + "/" + file_name,os.path.join(local_file,local_dir_name,file_name)) 
                     with open(log_path,"w") as f:
                         f.write(str(modify_dt))
@@ -84,4 +84,4 @@ def sftp_download_file(remote_file,local_file):
 
 if __name__ == "__main__":
     REMOTERESULTPATH = "./Research/optimization/results"
-    sftp_download_dir(REMOTERESULTPATH,local_file=".\\results",extension=".json")
+    sftp_download_dir(REMOTERESULTPATH,local_file="./results",extension=".json")
