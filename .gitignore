@@ -165,5 +165,5 @@ results/
 outputs/
 configs/
 *.sh
-environments.py
-runNumerical.py
+/environments.py
+/runNumerical.py
