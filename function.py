@@ -80,7 +80,7 @@ class subspace_norm(Function):
   def __call__(self,x):
     r = self.params[0]
     p = self.params[1]
-    return torch.linalg.norm(x[:r],ord = p)**p
+    return torch.linalg.norm(x[:r],ord = p)
   
   def SetDtype(self,dtype):
     for i in range(len(self.params)):

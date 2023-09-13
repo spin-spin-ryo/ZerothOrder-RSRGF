@@ -163,6 +163,7 @@ data/
 results/
 *.ipynb
 outputs/
+configs/
 *.sh
 environments.py
 runNumerical.py

@@ -10,4 +10,4 @@ else:
 
 CONFIGPATH = "./configs"
 RESULTPATH = "./results"
-KEYPATH = "/Users/dacapo271/.ssh/ist"
+KEYPATH = ""

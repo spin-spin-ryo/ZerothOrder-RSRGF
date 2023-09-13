@@ -260,6 +260,20 @@ def generate_softmax(properties):
         _,class_num = y.shape
         dim = feature_num*class_num + class_num
         x0 = torch.zeros(dim)
+    elif data_name == "news20":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/news20.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+        y=F.one_hot(y)
+        data_num,feature_num = X.shape
+        _,class_num = y.shape
+        dim = feature_num*class_num + class_num
+        x0 = torch.zeros(dim)
     elif data_name == "random":
         return
     params = [X,y]
