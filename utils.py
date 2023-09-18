@@ -1,6 +1,6 @@
 import torch
 from torch.autograd.functional import hvp
-from environments import DEVICE
+from environments import DEVICE,DTYPE
 import numpy as np
 
 def GetMinimumEig(H):
@@ -60,3 +60,14 @@ def convert_coo_torch(X):
     v = torch.FloatTensor(values)
     shape = X.shape
     return torch.sparse.FloatTensor(i,v,torch.Size(shape))
+
+def generate_sparse_random(d,n,s):
+   if isinstance(s,int):
+      pass
+   elif isinstance(s,float):
+      s = int(d*s)
+   column_index = torch.arange(n,device = DEVICE).repeat(s,1).transpose(0,1).reshape(-1)
+   row_index = torch.randint(0, d, (n * s,),device = DEVICE)
+   values = (2*torch.bernoulli(0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE))-1)/s**0.5
+   index = torch.cat((row_index.unsqueeze(0),column_index.unsqueeze(0)),dim = 0)
+   return torch.sparse_coo_tensor(index, values, (d, n))

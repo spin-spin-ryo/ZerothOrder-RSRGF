@@ -63,6 +63,16 @@ def get_solver(solver_name,params_json):
         step_schedule = params_json["step_schedule"]
         determine_step = get_determine_step(lr,step_schedule)
         solver = proposed_heuristic(determine_step)
+    elif solver_name == "proposed-sparse":
+        reduced_dim = int(params_json["reduced_dim"])
+        sample_size = int(params_json["sample_size"])
+        mu = float(params_json["mu"])
+        lr = float(params_json["lr"])
+        sparsity = float(params_json["sparsity"])
+        solver_params = [reduced_dim,sample_size,mu,lr,sparsity]
+        step_schedule = params_json["step_schedule"]
+        determine_step = get_determine_step(lr,step_schedule)
+        solver = proposed_sparse(determine_step)
     else:
         raise ValueError("No optimization method.")
 

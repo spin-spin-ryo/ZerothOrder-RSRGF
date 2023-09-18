@@ -166,3 +166,4 @@ outputs/
 configs/
 *.sh
 /environments.py
+shfiles/

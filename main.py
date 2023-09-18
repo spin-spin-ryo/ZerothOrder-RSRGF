@@ -101,10 +101,26 @@ def run(config_name,save_solution = False):
   plt.savefig(os.path.join(savepath,"result.pdf"))
   plt.close()
   
+def make_shfile(sh_file_name,**kwargs):
+  try:
+    config_name = kwargs["config"]
+  except:
+    config_name = "config.json"
   
-
+  with open(os.path.join(SHPATH,sh_file_name),"w") as f:
+    f.write("#!/bin/sh\n")
+    f.write("#SBATCH -p v\n")
+    f.write("#SBATCH --gres=gpu:1\n")
+    f.write("#SBATCH -N 1\n")
+    f.write(f"#SBATCH -o /home/u00786/Research/optimization/outputs/{config_name}.out\n")
+    f.write("export PATH=/home/app/singularity-ce/bin:$PATH\n")
+    f.write(f"singularity exec --nv /home/u00786/Research/Master-Research1/pytorch_22.03-py3.sif python /home/u00786/Research/optimization/main.py {os.path.join('auto',config_name)}\n")
+    f.write(f"mv {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'done',config_name)}")
+    f.close()
 
 
 if __name__ == "__main__":
-  config_name = "config.json"
-  run(config_name,save_solution=True)
+  import sys
+  args = sys.argv
+  config_name = args[1]
+  run(config_name)
