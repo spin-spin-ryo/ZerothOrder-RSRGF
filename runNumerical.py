@@ -14,15 +14,15 @@ rank = None
 subspace = None
 bias = None
 ord = 1
-coef = 1e-5
-data_name = "Scotus"
+coef = 1e-6
+data_name = "news20"
 data_num = None
 fused_flag = False
 
-# lrs = [1000,100,10,1,1e-1,1e-2,1e-3,1e-4,1e-5]
+lrs = [1000,100,10,1,1e-1,1e-2,1e-3,1e-4]
 # lrs = [1e-5,1e-6,1e-7,1e-8,1e-9,1e-10]
 # lrs = [1e-11,1e-12,1e-13,1e-14]
-lrs = [1000,10000]
+# lrs = [1000,10000]
 
 # solver_name = "RGF"
 solver_name = "proposed"
@@ -32,7 +32,7 @@ solver_name = "proposed"
 
 mus = [1e-12,1e-8,1e-6]
 sample_sizes = [1]
-reduced_dims = [10]
+reduced_dims = [100,50,10]
 heuristic_intervals = [None]
 sparsity = None
 
