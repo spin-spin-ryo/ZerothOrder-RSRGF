@@ -1,5 +1,6 @@
 from optim_method import __optim__
 from utils import generate_sparse_random
+from environments import DEVICE,DTYPE
 import torch
 import time
 
@@ -68,6 +69,11 @@ class proposed(__optim__):
         return
  
 class proposed_sparse(proposed):
+    def __init__(self, determine_stepsize):
+        super().__init__(determine_stepsize)
+        self.column_index = None
+        self.prob_vector = None
+
     def __direction__(self,loss):
         with torch.no_grad():
             reduced_dim = self.params[0]
@@ -75,7 +81,13 @@ class proposed_sparse(proposed):
             mu = self.params[2]
             dim = self.xk.shape[0]
             sparsity = self.params[4]
-            P = generate_sparse_random(d=reduced_dim,n = dim, s = sparsity).transpose(0,1)
+            if self.column_index is None or self.prob_vector is None:
+                s = int(sparsity*reduced_dim)
+                self.column_index = torch.arange(dim+1,device = DEVICE)*reduced_dim
+                self.prob_vector = 0.5*torch.ones(s*dim,device = DEVICE,dtype = DTYPE)
+  
+
+            P = generate_sparse_random(d=reduced_dim,n = dim, s = sparsity,column_index=self.column_index,prob_vector=self.prob_vector).transpose(0,1)
             subspace_func = lambda d: self.func(self.xk + P@d)
             subspace_dir = None
             U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))

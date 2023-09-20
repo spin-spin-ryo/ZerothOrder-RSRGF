@@ -10,6 +10,8 @@ USERNAME = "u00786"
 print("enter your ssh password")
 PASSWORD = getpass('your password: ')
 SLASH = os.path.join("a","b")[1:-1]
+window = True
+
 
 def ssh_connect():
     client = paramiko.client.SSHClient()

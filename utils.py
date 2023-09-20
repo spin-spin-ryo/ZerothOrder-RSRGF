@@ -61,13 +61,16 @@ def convert_coo_torch(X):
     shape = X.shape
     return torch.sparse.FloatTensor(i,v,torch.Size(shape))
 
-def generate_sparse_random(d,n,s):
+def generate_sparse_random(d,n,s,column_index = None,prob_vector = None):
    if isinstance(s,int):
       pass
    elif isinstance(s,float):
       s = int(d*s)
-   column_index = torch.arange(n,device = DEVICE).repeat(s,1).transpose(0,1).reshape(-1)
+   if column_index is None:
+      column_index = torch.arange(n+1,device = DEVICE)*d
+   if prob_vector is None:
+      prob_vector = 0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE)
+  
    row_index = torch.randint(0, d, (n * s,),device = DEVICE)
    values = (2*torch.bernoulli(0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE))-1)/s**0.5
-   index = torch.cat((row_index.unsqueeze(0),column_index.unsqueeze(0)),dim = 0)
-   return torch.sparse_coo_tensor(index, values, (d, n))
+   return torch.sparse_csr_tensor(column_index,row_index, values)

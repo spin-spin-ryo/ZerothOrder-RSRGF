@@ -80,16 +80,16 @@ class problem_prop_cmbbox(prop_cmbbox):
         notebook.pack()
 
         add_button_command = lambda : add_page(notebook,solver_dirs,solver_prop_dict)
-        add_button =  tk.Button(root,text = "追加",command=add_button_command)
+        add_button =  tk.Button(root,text = "add",command=add_button_command)
         add_button.pack()
         buttons["add_button"] = add_button
-        remove_button = tk.Button(root,text = "削除", command = remove_button_command)
+        remove_button = tk.Button(root,text = "remove", command = remove_button_command)
         remove_button.pack()
         buttons["remove_button"] = remove_button
-        option_button = tk.Button(root,text="オプション",command=open_option_window)
+        option_button = tk.Button(root,text="option",command=open_option_window)
         option_button.pack()
         buttons["option_button"] = option_button
-        exec_button = tk.Button(root,text = "実行",command=execute_plot)
+        exec_button = tk.Button(root,text = "exec",command=execute_plot)
         exec_button.pack()
         buttons["exec_button"] = exec_button
         return

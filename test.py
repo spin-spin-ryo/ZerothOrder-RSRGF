@@ -1,7 +1,5 @@
-import sys
-def test(x,*args):
-    print(args)
+import tkinter as tk
 
-if __name__ == "__main__":
-    args = sys.argv
-    test(1,*args)
+root = tk.Tk()
+root.mainloop()
+
