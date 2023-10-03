@@ -37,7 +37,6 @@ def get_allparams_from_dir(dir_path):
         if len(default_params) == 0:
             params = dir_name.split("_")
             for param in params:
-                print(param)
                 key,val = param.split(";")
                 default_params[key] = [val]    
         else:
@@ -115,9 +114,16 @@ def modify_local2global(path):
 
 def plot_result(target_pathes,*args):
     fvalues = []
+    labeledflag = False
+    labeled = {}
+    start = 0
+    end = -1
+    xscale = ""
+    yscale = ""
+    full_line = 100
+    
     for target_path in target_pathes:
         fvalues_files = find_files(target_path,r"fvalues.*\.pth")
-        print(fvalues_files)
         best_file_name = fvalues_files[0]
         min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
         for f in fvalues_files[1:]:
@@ -126,12 +132,8 @@ def plot_result(target_pathes,*args):
                 min_value = temp_min_value
                 best_file_name = f
         fvalues.append(torch.load(os.path.join(target_path,best_file_name)))
+        labeled[target_path] = target_path
     
-    start = 0
-    end = -1
-    xscale = ""
-    yscale = ""
-    full_line = 100
     #option関連
     for k,v in args[0].items():
         if k == "start":
@@ -144,15 +146,39 @@ def plot_result(target_pathes,*args):
             yscale = v
         if k == "full_line":
             full_line = v
+        if k == "label":
+            labeledflag = v
+            for target_path in target_pathes:
+                if v:
+                    solver_name = target_path.split(SLASH)[-2]
+                    solver_param_dir = modify_dir_name(target_path.split(SLASH)[-1])
+                    temp_solver_params = solver_param_dir.split("_")
+                    solver_params = {}
+                    for params in temp_solver_params:
+                        param,value = params.split(";")
+                        solver_params[param] = value
+                    try:
+                        use_params ={"reduced dim":r"$d={}$".format(solver_params["reduced dim"])}
+                    except:
+                        use_params = {}
+                    param_str = ""
+                    if len(use_params) != 0:
+                        param_str = " (" + use_params["reduced dim"] + ")"
+                    labeled[target_path] = solver_name + param_str
+                    
 
-    
     for p,v in zip(target_pathes,fvalues):
         print(p)
         if "proposed" in p:
-            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = p)
+            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
         else:
-            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = p,linestyle = "dotted")
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
+            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
+    if not labeledflag:
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
+    else:
+        plt.legend()
+    plt.xlabel("Iterations")
+    plt.ylabel(r"f(x)")
     if xscale != "":
         plt.xscale("log")
     if yscale != "":

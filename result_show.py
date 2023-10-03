@@ -1,17 +1,14 @@
 import os
-import matplotlib.pyplot as plt
-import torch
 from environments import RESULTPATH
-
 import tkinter as tk
 import tkinter.ttk as ttk
-
-from summarizing.widget import prop_cmbbox,solver_prop_cmbbox,page,generate_entry
+from summarizing.widget import prop_cmbbox,page,generate_entry
 from summarizing.utils import get_dir_from_dict,get_allparams_from_dir,modify_dir_name,modify_local2global,plot_result
 from download_result import sftp_download_dir
+import sys
 
 REMOTERESULTPATH = "./Research/optimization/results"
-    
+LOCAL = None   
 problem_prop_comboboxes = []
 problem_prop_frame =None
 problem_prop_dict = {}
@@ -108,6 +105,7 @@ def open_option_window():
     entry_xscale = generate_entry(option_window,"xscale")
     entry_yscale = generate_entry(option_window,"yscale")
     entry_interval = generate_entry(option_window,"full_line")
+    entry_label = generate_entry(option_window,"label")
     entry_start.insert(0,"0")
     entry_end.insert(0,"-1")
     entry_interval.insert(0,"100")
@@ -118,13 +116,13 @@ def open_option_window():
     option_entries[("xscale",str)] = entry_xscale
     option_entries[("yscale",str)] = entry_yscale
     option_entries[("full_line",int)] = entry_interval
+    option_entries[("label",bool)] = entry_label
 
 def remove_button_command():
     global pages
     global notebook
     notebook.forget(len(pages)-1)
     pages.pop()
-
 
 def add_page(notebook,solver_dirs,solver_prop_dict):
     global pages
@@ -143,7 +141,7 @@ def get_options():
 
 def execute_plot():
     global pages
-    
+    print(LOCAL)
     target_pathes = []
     for each_page in pages:
         each_page.get_path(CURRENT_PATH)
@@ -153,8 +151,12 @@ def execute_plot():
         problem_dir = CURRENT_PATH[len(RESULTPATH):]
         global_problem_dir = modify_local2global(problem_dir)
         global_path = REMOTERESULTPATH + global_problem_dir +"/"+ modify_local2global(now_path)    
-        if now_path != "" and os.path.exists(target_path):
-            sftp_download_dir(global_path,target_path,extension=".pth")
+        if not LOCAL:
+            if now_path != "" and os.path.exists(target_path):
+                sftp_download_dir(global_path,target_path,extension=".pth")
+                if os.path.exists(os.path.join(target_path,"fvalues.pth")):
+                    target_pathes.append(target_path)
+        else:
             if os.path.exists(os.path.join(target_path,"fvalues.pth")):
                 target_pathes.append(target_path)
 
@@ -165,7 +167,6 @@ def execute_plot():
 def get_problem_names():
     prob_lis = os.listdir(RESULTPATH)
     return prob_lis
-
 
 def generate_problem_properties_box(event):
     global problem_prop_frame
@@ -203,14 +204,19 @@ def generate_problem_properties_box(event):
             cmbbox.grid(count,1)
             problem_prop_comboboxes.append(cmbbox)
             count +=1
-            
-            
 
-problem_names = get_problem_names()
-root = tk.Tk()
-root.geometry("300x400")
-problem_name = tk.StringVar()
-problem_name_box = ttk.Combobox(root,textvariable=problem_name,state = "readonly",values = problem_names)
-problem_name_box.bind("<<ComboboxSelected>>",generate_problem_properties_box)
-problem_name_box.pack()
-root.mainloop()
+
+if __name__ == "__main__":
+    args = sys.argv 
+    if len(args) <= 1:
+        LOCAL = False
+    else:
+        LOCAL = True
+    problem_names = get_problem_names()
+    root = tk.Tk()
+    root.geometry("300x400")
+    problem_name = tk.StringVar()
+    problem_name_box = ttk.Combobox(root,textvariable=problem_name,state = "readonly",values = problem_names)
+    problem_name_box.bind("<<ComboboxSelected>>",generate_problem_properties_box)
+    problem_name_box.pack()
+    root.mainloop()
