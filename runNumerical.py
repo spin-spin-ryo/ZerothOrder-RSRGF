@@ -19,7 +19,7 @@ data_name = "Scotus"
 data_num = None
 fused_flag = False
 
-lrs = [1,1e-1,1e-2,]
+lrs = [1]
 # lrs = [1e-5,1e-6,1e-7,1e-8,1e-9,1e-10]
 # lrs = [1e-11,1e-12,1e-13,1e-14]
 # lrs = [1000,10000]
@@ -30,13 +30,13 @@ lrs = [1,1e-1,1e-2,]
 solver_name = "proposed-sparse"
 # solver_name = "AGD"
 
-mus = [1e-12,1e-8,1e-6]
+mus = [1e-8]
 sample_sizes = [1]
 reduced_dims = [100,50,10]
 heuristic_intervals = [None]
 sparsity = 0.1
 
-iterations =1000000
+iterations =2000000
 interval = 100000
 trial_numbers = 1
 count = 0

@@ -87,7 +87,7 @@ class proposed_sparse(proposed):
                 self.prob_vector = 0.5*torch.ones(s*dim,device = DEVICE,dtype = DTYPE)
   
 
-            P = generate_sparse_random(d=reduced_dim,n = dim, s = sparsity,column_index=self.column_index,prob_vector=self.prob_vector).transpose(0,1)
+            P = generate_sparse_random(d=reduced_dim,n = dim, s = sparsity,column_index=self.column_index,prob_vector=self.prob_vector)
             subspace_func = lambda d: self.func(self.xk + P@d)
             subspace_dir = None
             U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))

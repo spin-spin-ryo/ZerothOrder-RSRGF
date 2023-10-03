@@ -72,5 +72,5 @@ def generate_sparse_random(d,n,s,column_index = None,prob_vector = None):
       prob_vector = 0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE)
   
    row_index = torch.randint(0, d, (n * s,),device = DEVICE)
-   values = (2*torch.bernoulli(0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE))-1)/s**0.5
+   values = (2*torch.bernoulli(prob_vector)-1)/s**0.5
    return torch.sparse_csr_tensor(crow_indices=column_index,col_indices=row_index, values = values)
