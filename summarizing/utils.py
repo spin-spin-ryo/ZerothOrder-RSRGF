@@ -114,26 +114,19 @@ def modify_local2global(path):
 
 def plot_result(target_pathes,*args):
     fvalues = []
+    fvalues_std = []
     labeledflag = False
     labeled = {}
     start = 0
     end = -1
+    mode = "best"
     xscale = ""
     yscale = ""
     full_line = 100
-    
     for target_path in target_pathes:
-        fvalues_files = find_files(target_path,r"fvalues.*\.pth")
-        best_file_name = fvalues_files[0]
-        min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
-        for f in fvalues_files[1:]:
-            temp_min_value = torch.min(torch.load(os.path.join(target_path,f)))
-            if temp_min_value < min_value:
-                min_value = temp_min_value
-                best_file_name = f
-        fvalues.append(torch.load(os.path.join(target_path,best_file_name)))
         labeled[target_path] = target_path
     
+        
     #option関連
     for k,v in args[0].items():
         if k == "start":
@@ -146,6 +139,8 @@ def plot_result(target_pathes,*args):
             yscale = v
         if k == "full_line":
             full_line = v
+        if k == "mode":
+            mode = v
         if k == "label":
             labeledflag = v
             for target_path in target_pathes:
@@ -165,14 +160,99 @@ def plot_result(target_pathes,*args):
                     if len(use_params) != 0:
                         param_str = " (" + use_params["reduced dim"] + ")"
                     labeled[target_path] = solver_name + param_str
-                    
+                
+    
 
-    for p,v in zip(target_pathes,fvalues):
+    for target_path in target_pathes:
+        if mode == "best":
+            fvalues_files = find_files(target_path,r"fvalues.*\.pth")
+            best_file_name = fvalues_files[0]
+            min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
+            for f in fvalues_files[1:]:
+                temp_min_value = torch.min(torch.load(os.path.join(target_path,f)))
+                if temp_min_value < min_value:
+                    min_value = temp_min_value
+                    best_file_name = f
+            fvalues.append(torch.load(os.path.join(target_path,best_file_name)))
+        elif mode == "mean":
+            fvalues_files = find_files(target_path,r"fvalues.*\.pth")
+            if end == -1:
+                max_length = 0
+                count = 0
+                sum_value = None
+                
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    max_length = max(temp_fvalue.shape[0],max_length)
+                
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    if temp_fvalue.shape[0] == max_length:
+                        count += 1
+                        if sum_value is None:
+                            sum_value = temp_fvalue
+                        else:
+                            sum_value += temp_fvalue
+                fvalues.append(sum_value/count)
+                print(count)
+            else:
+                count = 0
+                sum_value = None
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    if temp_fvalue[start:end].shape[0] == end - start:
+                        count += 1
+                        if sum_value is None:
+                            sum_value = temp_fvalue
+                        else:
+                            sum_value += temp_fvalue
+                fvalues.append(sum_value/count)
+        
+        elif mode == "mean std":
+            fvalues_files = find_files(target_path,r"fvalues.*\.pth")
+            if end == -1:
+                max_length = 0
+                sum_values = None
+                
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    max_length = max(temp_fvalue.shape[0],max_length)
+                
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    if temp_fvalue.shape[0] == max_length:
+                        if sum_values is None:
+                            sum_values = temp_fvalue.unsqueeze(0)
+                        else:
+                            sum_values = torch.cat((sum_values,temp_fvalue.unsqueeze(0)),dim = 0) 
+                        
+                fvalue_mean = torch.mean(sum_values,dim = 0)
+                fvalue_std = torch.std(sum_values,dim = 0)
+                fvalues.append(fvalue_mean)
+                fvalues_std.append(fvalue_std)
+            else:
+                sum_values = None
+                for fvalue_file in fvalues_files:
+                    temp_fvalue = torch.load(os.path.join(target_path,fvalue_file))
+                    if temp_fvalue[start:end].shape[0] == end - start:
+                        if sum_values is None:
+                            sum_values = temp_fvalue.unsqueeze(0)
+                        else:
+                            sum_values = torch.cat((sum_values,temp_fvalue.unsqueeze(0)),dim = 0) 
+                        
+                fvalue_mean = torch.mean(sum_values,dim = 0)
+                fvalue_std = torch.std(sum_values,dim = 0)
+                fvalues.append(fvalue_mean)
+                fvalues_std.append(fvalue_std)
+
+    for index,(p,v) in enumerate(zip(target_pathes,fvalues)):
         print(p)
         if "proposed" in p:
             plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
         else:
             plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
+        if mode == "mean std":
+            plt.fill_between(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line] + fvalues_std[index][start:end][::full_line],v[start:end][::full_line] - fvalues_std[index][start:end][::full_line],alpha = 0.15)
     if not labeledflag:
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
     else:

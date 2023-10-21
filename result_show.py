@@ -105,10 +105,12 @@ def open_option_window():
     entry_xscale = generate_entry(option_window,"xscale")
     entry_yscale = generate_entry(option_window,"yscale")
     entry_interval = generate_entry(option_window,"full_line")
+    entry_mode = generate_entry(option_window,"mode")
     entry_label = generate_entry(option_window,"label")
     entry_start.insert(0,"0")
     entry_end.insert(0,"-1")
     entry_interval.insert(0,"100")
+    entry_mode.insert(0,"best")
     
 
     option_entries[("start",int)] = entry_start
@@ -116,6 +118,7 @@ def open_option_window():
     option_entries[("xscale",str)] = entry_xscale
     option_entries[("yscale",str)] = entry_yscale
     option_entries[("full_line",int)] = entry_interval
+    option_entries[("mode",str)] = entry_mode
     option_entries[("label",bool)] = entry_label
 
 def remove_button_command():
