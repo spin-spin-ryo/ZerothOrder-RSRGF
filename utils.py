@@ -67,10 +67,10 @@ def generate_sparse_random(d,n,s,column_index = None,prob_vector = None):
    elif isinstance(s,float):
       s = int(d*s)
    if column_index is None:
-      column_index = torch.arange(n+1,device = DEVICE)*d
+      column_index = torch.arange(n,device = DEVICE).repeat(s).reshape(1,-1)
    if prob_vector is None:
       prob_vector = 0.5*torch.ones(s*n,device = DEVICE,dtype = DTYPE)
-  
-   row_index = torch.randint(0, d, (n * s,),device = DEVICE)
+   row_index = torch.randint(0,d,(1,n*s),device = DEVICE)
+   index = torch.cat((column_index,row_index),dim=0)
    values = (2*torch.bernoulli(prob_vector)-1)/s**0.5
-   return torch.sparse_csr_tensor(crow_indices=column_index,col_indices=row_index, values = values)
+   return torch.sparse_coo_tensor(indices = index, values = values,device = DEVICE)

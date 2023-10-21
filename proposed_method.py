@@ -83,7 +83,7 @@ class proposed_sparse(proposed):
             sparsity = self.params[4]
             if self.column_index is None or self.prob_vector is None:
                 s = int(sparsity*reduced_dim)
-                self.column_index = torch.arange(dim+1,device = DEVICE)*reduced_dim
+                self.column_index = torch.arange(dim,device = DEVICE).repeat(s).reshape(1,-1)
                 self.prob_vector = 0.5*torch.ones(s*dim,device = DEVICE,dtype = DTYPE)
   
 
