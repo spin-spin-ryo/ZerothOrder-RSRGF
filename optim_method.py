@@ -191,10 +191,12 @@ zeroth order method
 
 class random_gradient_free(__optim__):
     #　directionの計算を同時にやることで削減する方法もありそうだがとりあえずfor 文
-    def __init__(self,determine_stepsize = None):
+    def __init__(self,determine_stepsize = None,central = False):
         # params = [mu,sample_size,lr]
         self.determine_stepsize  = determine_stepsize
+        self.central = central
         super().__init__()
+        print("central",self.central)
 
     def __direction__(self,loss):
         with torch.no_grad():
@@ -204,11 +206,19 @@ class random_gradient_free(__optim__):
             dir = None
             P = torch.randn(sample_size,dim,device = self.device,dtype = self.dtype)/(sample_size**(0.5))
             for i in range(sample_size):
-                f1 = self.func(self.xk + mu*P[i])
-                if dir is None:
-                    dir = (f1.item() - loss.item())/mu * P[i] 
+                if self.central:
+                    f1 = self.func(self.xk + mu*P[i])
+                    f2 = self.func(self.xk - mu*P[i])
+                    if dir is None:
+                        dir = (f1.item() - f2.item())/(2*mu) *P[i]
+                    else:
+                        dir += (f1.item() - f2.item())/(2*mu) *P[i]
                 else:
-                    dir += (f1.item() - loss.item())/mu * P[i]
+                    f1 = self.func(self.xk + mu*P[i])
+                    if dir is None:
+                        dir = (f1.item() - loss.item())/mu * P[i] 
+                    else:
+                        dir += (f1.item() - loss.item())/mu * P[i]
             return - dir 
     
     def __step__(self,i):

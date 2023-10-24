@@ -40,19 +40,21 @@ def get_solver(solver_name,params_json):
         mu = float(params_json["mu"])
         sample_size = int(params_json["sample_size"])
         lr = float(params_json["lr"])
+        central = bool(params_json["central"])
         solver_params = [mu,sample_size,lr]
         step_schedule = params_json["step_schedule"]
         determine_step = get_determine_step(lr,step_schedule)
-        solver = random_gradient_free(determine_step)
+        solver = random_gradient_free(determine_step,central)
     elif solver_name == "proposed":
         reduced_dim = int(params_json["reduced_dim"])
         sample_size = int(params_json["sample_size"])
         mu = float(params_json["mu"])
         lr = float(params_json["lr"])
+        central = bool(params_json["central"])
         solver_params = [reduced_dim,sample_size,mu,lr]
         step_schedule = params_json["step_schedule"]
         determine_step = get_determine_step(lr,step_schedule)
-        solver = proposed(determine_step)
+        solver = proposed(determine_step,central)
     elif solver_name == "proposed-heuristic":
         reduced_dim = int(params_json["reduced_dim"])
         sample_size = int(params_json["sample_size"])

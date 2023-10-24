@@ -7,10 +7,12 @@ import time
 
 
 class proposed(__optim__):
-    def __init__(self,determine_stepsize):
+    def __init__(self,determine_stepsize,central = False):
         #params = [reduced_dim,sample_size,mu,lr]
         self.determine_stepsize  = determine_stepsize
+        self.central = central
         super().__init__()
+        print("central",self.central)
     
     def __direction__(self,loss):
         with torch.no_grad():
@@ -22,12 +24,21 @@ class proposed(__optim__):
             subspace_func = lambda d: self.func(self.xk + P@d)
             subspace_dir = None
             U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
-            for i in range(sample_size):
-                g1 = subspace_func(mu*U[i])
-                if subspace_dir is None:
-                    subspace_dir = (g1 - loss.item())/mu * U[i]
-                else:
-                    subspace_dir += (g1 - loss.item())/mu * U[i]
+            if self.central:
+                for i in range(sample_size):
+                    g1 = subspace_func(mu*U[i])
+                    g2 = subspace_func(-mu*U[i])
+                    if subspace_dir is None:
+                        subspace_dir = (g1 - g2)/(2*mu) * U[i]
+                    else:
+                        subspace_dir += (g1 - g2)/(2*mu) * U[i]
+            else:
+                for i in range(sample_size):
+                    g1 = subspace_func(mu*U[i])
+                    if subspace_dir is None:
+                        subspace_dir = (g1 - loss.item())/mu * U[i]
+                    else:
+                        subspace_dir += (g1 - loss.item())/mu * U[i]
             return - P@subspace_dir
     
     def __step__(self,i):
@@ -99,8 +110,6 @@ class proposed_sparse(proposed):
                     subspace_dir += (g1 - loss.item())/mu * U[i]
             return - P@subspace_dir
     
-
-
 class proposed_heuristic(proposed):
     def __init__(self, determine_stepsize):
         super().__init__(determine_stepsize)

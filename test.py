@@ -1,7 +1,7 @@
-from utils import generate_sparse_random
-import torch
-print(torch.__version__)
-d = 100
-n = 1000000
-s = 0.1
-generate_sparse_random(d,n,s)
+from summarizing.utils import add_name_all_dirs
+
+
+if __name__ == "__main__":
+    add_char = "_central:False"
+    init_dir = "/home/u00786/Research/optimization/results/regularized softmax/ord:1_coef:1e-06_fused:False_data-name:news20/RGF"
+    add_name_all_dirs(add_char,init_dir,False)

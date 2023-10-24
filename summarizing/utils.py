@@ -185,3 +185,12 @@ def plot_result(target_pathes,*args):
         plt.yscale("log")
     plt.show()
     
+def add_name_all_dirs(add_char,init_dir,check = True):
+    list_dirs = os.listdir(init_dir)
+    for dir_name in list_dirs:
+        if add_char not in dir_name:
+            print(dir_name)
+            print(dir_name+add_char)
+            if not check:
+                os.rename(init_dir+"/"+dir_name,init_dir+"/"+dir_name+add_char)
+
