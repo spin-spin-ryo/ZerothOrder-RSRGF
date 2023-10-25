@@ -2,7 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from utils import GetMinimumEig,compute_hvp
+from utils import GetMinimumEig,compute_hvp,generate_sub_orthogonal
 import time
 import json
 from environments import *
@@ -220,6 +220,40 @@ class random_gradient_free(__optim__):
                     else:
                         dir += (f1.item() - loss.item())/mu * P[i]
             return - dir 
+    
+    def __step__(self,i):
+        if self.determine_stepsize is not None:
+            return self.determine_stepsize(i);
+        else:
+            lr = self.params[2]
+            return lr
+    
+    def __iter_per__(self, i):
+        with torch.no_grad():
+            return super().__iter_per__(i)
+
+
+class orthogonal_zeroth_order(__optim__):
+    def __init__(self,determine_stepsize = None):
+        # params = [mu,sample_size,lr]
+        self.determine_stepsize  = determine_stepsize
+        super().__init__()
+        
+    def __direction__(self,loss):
+        with torch.no_grad():
+            mu = self.params[0]
+            sample_size = self.params[1]
+            dim = self.xk.shape[0]
+            dir = None
+            P = generate_sub_orthogonal(sample_size,dim)
+            for i in range(sample_size):
+                f1 = self.func(self.xk + mu*P[i])
+                f2 = self.func(self.xk - mu*P[i])
+                if dir is None:
+                    dir = (f1.item() - f2.item())/(2*mu) *P[i]
+                else:
+                    dir += (f1.item() - f2.item())/(2*mu) *P[i]
+            return - dim*dir 
     
     def __step__(self,i):
         if self.determine_stepsize is not None:

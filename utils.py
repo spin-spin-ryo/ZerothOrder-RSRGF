@@ -74,3 +74,10 @@ def generate_sparse_random(d,n,s,column_index = None,prob_vector = None):
    index = torch.cat((column_index,row_index),dim=0)
    values = (2*torch.bernoulli(prob_vector)-1)/s**0.5
    return torch.sparse_coo_tensor(indices = index, values = values,device = DEVICE)
+
+def generate_sub_orthogonal(reduced_dim,dim):
+   v = torch.randn(1,dim,device = DEVICE)
+   v/= torch.linalg.norm(v)
+   a = v.transpose(0,1)[:reduced_dim]
+   G = torch.eye(reduced_dim,dim,device = DEVICE)-2*a@v
+   return G
