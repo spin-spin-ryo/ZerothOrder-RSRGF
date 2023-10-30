@@ -52,7 +52,7 @@ def get_solver(solver_name,params_json):
         solver_params = [mu,sample_size,lr]
         step_schedule = params_json["step_schedule"]
         determine_step = get_determine_step(lr,step_schedule)
-        solver = orthogonal_zeroth_order(determine_step,central)
+        solver = orthogonal_zeroth_order(determine_step)
     elif solver_name == "proposed":
         reduced_dim = int(params_json["reduced_dim"])
         sample_size = int(params_json["sample_size"])
