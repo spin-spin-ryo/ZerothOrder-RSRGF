@@ -119,6 +119,28 @@ class rosenbrock(Function):
   def __call__(self,x):
     super().__call__(x)
 
+class adversarial(Function):
+  def __init__(self, params=[]):
+    from ml.logistic.models import Logistic
+    super().__init__(params)
+    X = self.params[0]
+    y = self.params[1]
+    epoch_num = self.params[2]
+    data_num = X.shape[0]
+    features_num = X.shape[1]
+    class_num = torch.max(y)+1
+    self.model = Logistic(features_num=features_num,class_num=class_num)
+    model_path = f"./ml/logistic/checkpoints/model_epoch{epoch_num}.pth"
+    self.model.load_state_dict(torch.load(model_path))
+  
+  def __call__(self, x):
+    # x : (features_num)
+    X = self.params[0]
+    y = self.params[1]
+    with torch.no_grad():
+      return self.model.loss(X+x,y)
+
+
 class regularizedfunction(Function):
   def __init__(self,f,params):
     self.f = f

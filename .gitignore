@@ -167,3 +167,6 @@ configs/
 *.sh
 /environments.py
 shfiles/
+
+*.pth
+*.bz2

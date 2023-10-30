@@ -1,7 +1,13 @@
-from summarizing.utils import add_name_all_dirs
+from ml.logistic.models import Logistic
+import torch
 
 
-if __name__ == "__main__":
-    add_char = "_central:False"
-    init_dir = "/home/u00786/Research/optimization/results/regularized softmax/ord:1_coef:1e-06_fused:False_data-name:news20/RGF"
-    add_name_all_dirs(add_char,init_dir,False)
+feature_num = 1000000
+class_num = 20
+
+model = Logistic(features_num=feature_num,class_num=class_num)
+
+x = torch.randn(10,feature_num)
+
+pred = model(x)
+print(pred.shape)
