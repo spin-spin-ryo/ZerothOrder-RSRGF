@@ -54,6 +54,8 @@ def generate(mode,properties):
     elif mode == "regularized NMF local":
         f,x0 = generate_nmf(properties,local = True)
         f = generate_regularized(f,properties)
+    elif mode == "adverserial attack":
+        f,x0 = generate_adverserial(properties)
     else:
         raise ValueError("No functions.")
     return f,x0
@@ -280,4 +282,36 @@ def generate_softmax(properties):
     f = softmax(params)
     return f,x0
 
-        
+def generate_adverserial(properties):
+    data_name = properties["data-name"]
+    epoch_num = int(properties["epoch-num"])
+    coef = torch.tensor(properties["coef"])
+    if data_name == "Scotus":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/scotus_lexglue_tfidf_train.svm.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        X = X.to_dense()
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+
+    elif data_name == "news20":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/news20.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        X = X.to_dense()
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+    
+    params = [X,y,epoch_num,coef]
+    features_num = X.shape[1]
+    f = adversarial(params=params)
+    x0 = torch.ones(features_num)
+    return f,x0
+
+    

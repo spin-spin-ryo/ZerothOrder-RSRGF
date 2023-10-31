@@ -5,33 +5,34 @@ import json
 from main import run,make_shfile
 import subprocess
 
-split_sh = True
+split_sh = False
 
-problem = "regularized softmax"
+problem = "adverserial attack"
 property = None
 dim = None
 rank = None
 subspace = None
 bias = None
-ord = 1
-coef = 1e-6
+ord = None
+coef = 0.1
 data_name = "Scotus"
 data_num = None
-fused_flag = False
+fused_flag = None
+epoch_num = 1600
 
 # lrs = [1,1e-1,1e-2]
 lrs = [10,1,1e-1,1e-2,1e-3,1e-4,1e-5]
 
 # solver_name = "RGF"
-solver_name = "OZD"
-# solver_name = "proposed"
+# solver_name = "OZD"
+solver_name = "proposed"
 # solver_name = "proposed-heuristic"
 # solver_name = "proposed-sparse"
 # solver_name = "AGD"
 
 mus = [1e-8]
 sample_sizes = [1]
-reduced_dims = [None]
+reduced_dims = [10,50,100]
 heuristic_intervals = [None]
 sparsity = None
 central = None
@@ -60,7 +61,8 @@ if __name__ == "__main__":
                 "coef":coef,
                 "fused": fused_flag,
                 "data-name":data_name,
-                "bias":bias
+                "bias":bias,
+                "epoch-num":epoch_num
             }
             ,
             "solver":solver_name,

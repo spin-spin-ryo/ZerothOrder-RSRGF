@@ -137,9 +137,27 @@ class adversarial(Function):
     # x : (features_num)
     X = self.params[0]
     y = self.params[1]
+    coef = self.params[3]
+    threshold = 0
+    y_onehot = F.one_hot(y,num_classes = self.class_num).to(torch.bool)
+    not_y_onehhot = torch.logical_not(y_onehot)
     with torch.no_grad():
-      return self.model.loss(X+x,y)
+      scores = self.model.loss(X+x)
+      true_scores = scores[y_onehot]
+      max_not_true_scores = torch.max(scores[not_y_onehhot].reshape(self.data_num,self.class_num-1),dim = 1).values
+      untarget_loss = true_scores - max_not_true_scores
+      untarget_loss[untarget_loss<0]=0
+      return untarget_loss + coef*(x@x)
 
+  def SetDevice(self, device):
+    self.model = self.model.to(device)
+    return super().SetDevice(device)
+
+  def SetDtype(self, dtype):
+    self.model = self.model.to(dtype)
+    super().SetDtype(dtype)
+    self.params[1] = self.params[1].to(torch.int64)
+    return
 
 class regularizedfunction(Function):
   def __init__(self,f,params):
