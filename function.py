@@ -166,9 +166,10 @@ class robust_adversarial(Function):
     super().__init__(params)
     self.subproblem_eps = subproblem_eps
     self.inner_iteration = inner_iteration
+    self.delta = 0.1
     
 
-  def __call__(self,x,delta = 0.1,eps = 1e-12):
+  def __call__(self,x,eps = 1e-12):
     X = self.params[0]
     y = self.params[1]
     data_num,feature_num = X.shape
@@ -179,7 +180,7 @@ class robust_adversarial(Function):
       return -self.inner_func(x_input,x=x)
     
     def prox(x,t):
-      return projection_ball2(x,t,r = delta)
+      return projection_ball2(x,t,r = self.delta)
     
     x0 = torch.zeros(feature_num,device=X.device,dtype = X.dtype)
     delta_X = self.solve_subproblem(func=func,prox=prox,x0=x0,eps=self.subproblem_eps,iteration=self.inner_iteration)

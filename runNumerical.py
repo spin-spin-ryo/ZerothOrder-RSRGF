@@ -20,10 +20,10 @@ data_num = None
 fused_flag = False
 epoch_num = None
 inner_iteration = 100000
-subproblem_eps = 1e-3
+subproblem_eps = 1e-5
 
 # lrs = [1e-3]
-lrs = [30]
+lrs = [300]
 
 # solver_name = "RGF"
 # solver_name = "OZD"
@@ -32,16 +32,16 @@ solver_name = "proposed"
 # solver_name = "proposed-sparse"
 # solver_name = "AGD"
 
-mus = [1e-8]
+mus = [1e-4,1e-12]
 sample_sizes = [1]
-reduced_dims = [50]
+reduced_dims = [10]
 # reduced_dims = [None]
 heuristic_intervals = [None]
 sparsity = None
 central = None
 
-iterations =1000000
-interval = 5000
+iterations =10000
+interval = 1000
 trial_numbers = 1
 count = 0
 step_schedule = "constant"
