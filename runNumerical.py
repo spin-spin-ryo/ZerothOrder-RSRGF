@@ -23,7 +23,7 @@ inner_iteration = 100000
 subproblem_eps = 1e-3
 
 # lrs = [1e-3]
-lrs = [200,300,400]
+lrs = [30]
 
 # solver_name = "RGF"
 # solver_name = "OZD"
@@ -34,14 +34,14 @@ solver_name = "proposed"
 
 mus = [1e-8]
 sample_sizes = [1]
-reduced_dims = [10]
+reduced_dims = [50]
 # reduced_dims = [None]
 heuristic_intervals = [None]
 sparsity = None
 central = None
 
-iterations =10000
-interval = 1000
+iterations =1000000
+interval = 5000
 trial_numbers = 1
 count = 0
 step_schedule = "constant"

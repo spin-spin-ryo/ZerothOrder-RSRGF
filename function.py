@@ -2,7 +2,7 @@ from typing import Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from solver import BackTrackingPGD,projection_ball2
+from solver import BackTrackingPGD,projection_ball2,BackTrackingAccerelatedPGD
 from optim_method import logger
 
 class Function:
@@ -211,7 +211,7 @@ class robust_adversarial(Function):
     
   
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
-    solver = BackTrackingPGD(func=func,prox=prox)
+    solver = BackTrackingAccerelatedPGD(func=func,prox=prox)
     solver.__iter__(x0=x0,iteration=iteration,eps=eps)
     return solver.get_solution()
 

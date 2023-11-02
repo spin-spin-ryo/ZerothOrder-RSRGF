@@ -102,7 +102,7 @@ class BackTrackingAccerelatedPGD(BackTrackingPGD):
     def backtracking(self, g, beta):
         _x = self.prox(self.v-self.t*g,self.t)
 
-        while self.func(_x) > self.func(self.v) + g@(_x - self.v) + 1/(2*self.t)*((_x - self.v)@(_x - self.v)):
+        while self.t*self.func(_x) > self.t*self.func(self.v) + self.t*g@(_x - self.v) + 1/2*((_x - self.v)@(_x - self.v)):
             self.t *= beta
             _x = self.prox(self.v-self.t*g,self.t)    
         return self.t
@@ -118,8 +118,7 @@ class BackTrackingAccerelatedPGD(BackTrackingPGD):
         with torch.no_grad():
             t = self.backtracking(g,beta=beta)
             x_ = self.prox(self.v - t*g,t)
-            G_t = (x_ - self.v)/t
-            if self.check_stop(G_t,eps):
+            if self.check_stop(x_ - self.v,t*eps):
                 return True
             self.xk1 = self.xk
             self.xk = x_.detach().clone()
