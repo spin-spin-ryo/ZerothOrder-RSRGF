@@ -55,12 +55,10 @@ class __optim__:
         self.__save_value__(i,fvalues = ("min",loss.item()),time_values = ("max",time.time() - self.start_time))
         return
     
-    
-    
     def __step__(self,i):
         return 1.0
     
-    def __iter__(self,func,x0,params,iterations,savepath,interval = None):
+    def __iter__(self,func,x0,params,iterations,savepath,suffix = "",interval = None):
         if interval is None:
             interval = iterations
         torch.cuda.synchronize()
@@ -72,7 +70,7 @@ class __optim__:
         for i in range(iterations):
             self.__iter_per__(i)
             if (i+1)%interval == 0:
-                self.__save__(savepath)
+                self.__save__(savepath,suffix=suffix,fvalues = "min",time_values = "max")
                 self.__log__(i)
     
     def __save_init__(self,iterations,**kwargs):
@@ -86,7 +84,9 @@ class __optim__:
             self.save_values[(key,ope)][index] = value
             
     
-    def __save__(self,savepath):
+    def __save__(self,savepath,suffix = "",**kwargs):
+        for key,ope in kwargs.items():
+            torch.save(self.save_values[(key,ope)],os.path.join(savepath,key + f"{suffix}.pth"))
         return
         
 
@@ -199,27 +199,26 @@ class random_gradient_free(__optim__):
         print("central",self.central)
 
     def __direction__(self,loss):
-        with torch.no_grad():
-            mu = self.params[0]
-            sample_size = self.params[1]
-            dim = self.xk.shape[0]
-            dir = None
-            P = torch.randn(sample_size,dim,device = self.device,dtype = self.dtype)/(sample_size**(0.5))
-            for i in range(sample_size):
-                if self.central:
-                    f1 = self.func(self.xk + mu*P[i])
-                    f2 = self.func(self.xk - mu*P[i])
-                    if dir is None:
-                        dir = (f1.item() - f2.item())/(2*mu) *P[i]
-                    else:
-                        dir += (f1.item() - f2.item())/(2*mu) *P[i]
+        mu = self.params[0]
+        sample_size = self.params[1]
+        dim = self.xk.shape[0]
+        dir = None
+        P = torch.randn(sample_size,dim,device = self.device,dtype = self.dtype)/(sample_size**(0.5))
+        for i in range(sample_size):
+            if self.central:
+                f1 = self.func(self.xk + mu*P[i])
+                f2 = self.func(self.xk - mu*P[i])
+                if dir is None:
+                    dir = (f1.item() - f2.item())/(2*mu) *P[i]
                 else:
-                    f1 = self.func(self.xk + mu*P[i])
-                    if dir is None:
-                        dir = (f1.item() - loss.item())/mu * P[i] 
-                    else:
-                        dir += (f1.item() - loss.item())/mu * P[i]
-            return - dir 
+                    dir += (f1.item() - f2.item())/(2*mu) *P[i]
+            else:
+                f1 = self.func(self.xk + mu*P[i])
+                if dir is None:
+                    dir = (f1.item() - loss.item())/mu * P[i] 
+                else:
+                    dir += (f1.item() - loss.item())/mu * P[i]
+        return - dir 
     
     def __step__(self,i):
         if self.determine_stepsize is not None:
@@ -229,10 +228,12 @@ class random_gradient_free(__optim__):
             return lr
     
     def __iter_per__(self, i):
-        with torch.no_grad():
-            return super().__iter_per__(i)
+        return super().__iter_per__(i)
 
-
+    def __save_init__(self, iterations, **kwargs):
+        self.xk.requires_grad_(False)
+        return super().__save_init__(iterations, **kwargs)
+    
 class orthogonal_zeroth_order(__optim__):
     def __init__(self,determine_stepsize = None):
         # params = [mu,sample_size,lr]
@@ -375,6 +376,9 @@ class ExtendedRMM(__optim__):
             while self.loss.item() - self.func(self.xk + lr*dk) < -alpha*lr*self.xk.grad@dk:
                 lr *= beta  
         return super().__update__(lr*dk)
+    
+    
+
 
 # class NewtonCG(__optim__):
 #     def __init__(self):

@@ -15,32 +15,31 @@ class proposed(__optim__):
         print("central",self.central)
     
     def __direction__(self,loss):
-        with torch.no_grad():
-            reduced_dim = self.params[0]
-            sample_size = self.params[1]
-            mu = self.params[2]
-            dim = self.xk.shape[0]
-            P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(dim,device = self.device,dtype = self.dtype))
-            subspace_func = lambda d: self.func(self.xk + P@d)
-            subspace_dir = None
-            U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
-            if self.central:
-                for i in range(sample_size):
-                    g1 = subspace_func(mu*U[i])
-                    g2 = subspace_func(-mu*U[i])
-                    if subspace_dir is None:
-                        subspace_dir = (g1 - g2)/(2*mu) * U[i]
-                    else:
-                        subspace_dir += (g1 - g2)/(2*mu) * U[i]
-            else:
-                for i in range(sample_size):
-                    g1 = subspace_func(mu*U[i])
-                    if subspace_dir is None:
-                        subspace_dir = (g1 - loss.item())/mu * U[i]
-                    else:
-                        subspace_dir += (g1 - loss.item())/mu * U[i]
-            return - P@subspace_dir
-    
+        reduced_dim = self.params[0]
+        sample_size = self.params[1]
+        mu = self.params[2]
+        dim = self.xk.shape[0]
+        P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(dim,device = self.device,dtype = self.dtype))
+        subspace_func = lambda d: self.func(self.xk + P@d)
+        subspace_dir = None
+        U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
+        if self.central:
+            for i in range(sample_size):
+                g1 = subspace_func(mu*U[i])
+                g2 = subspace_func(-mu*U[i])
+                if subspace_dir is None:
+                    subspace_dir = (g1 - g2)/(2*mu) * U[i]
+                else:
+                    subspace_dir += (g1 - g2)/(2*mu) * U[i]
+        else:
+            for i in range(sample_size):
+                g1 = subspace_func(mu*U[i])
+                if subspace_dir is None:
+                    subspace_dir = (g1 - loss.item())/mu * U[i]
+                else:
+                    subspace_dir += (g1 - loss.item())/mu * U[i]
+        return - P@subspace_dir
+
     def __step__(self,i):
         if self.determine_stepsize is not None:
             return self.determine_stepsize(i);
@@ -49,22 +48,22 @@ class proposed(__optim__):
             return lr
     
     def __iter_per__(self, i):
-        with torch.no_grad():
-            return super().__iter_per__(i)
+        return super().__iter_per__(i)
     
-    def __iter__(self,func,x0,params,iterations,savepath,interval = None):
+    def __iter__(self,func,x0,params,iterations,savepath,suffix,interval = None):
         if interval is None:
             interval = iterations
         torch.cuda.synchronize()
         self.start_time = time.time()
         self.params = params
         self.xk = x0
+        self.xk.requires_grad_(False)
         self.func = func
         self.__save_init__(iterations,fvalues = "min",time_values = "max",norm_dir = "iter")
         for i in range(iterations):
             self.__iter_per__(i)
             if (i+1)%interval == 0:
-                self.__save__(savepath)
+                self.__save__(savepath=savepath,suffix=suffix,fvalues = "min",time_values = "max")
                 self.__log__(i)
     
     def __iter_per__(self,i):

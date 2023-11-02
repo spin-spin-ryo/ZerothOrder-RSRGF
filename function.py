@@ -2,6 +2,8 @@ from typing import Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from solver import BackTrackingPGD,projection_ball2
+from optim_method import logger
 
 class Function:
   def __init__(self,params = []):
@@ -74,8 +76,6 @@ class softmax(Function):
     out1 = -Z + eps + sum_Z
     return torch.mean(torch.sum(out1*y,dim = 1))
 
-
-
 class subspace_norm(Function):
   def __call__(self,x):
     r = self.params[0]
@@ -100,6 +100,7 @@ class LinearRegression(Function):
       return torch.linalg.norm(A@x - b)**2
     else:
       return torch.linalg.norm(A@x[:-1] + x[-1] - b)**2
+
 class NMF(Function):
   def __call__(self, x):
     W = self.params[0]
@@ -158,6 +159,61 @@ class adversarial(Function):
     super().SetDtype(dtype)
     self.params[1] = self.params[1].to(torch.int64)
     return
+
+class robust_adversarial(Function):
+  def __init__(self, params=[],subproblem_eps = 1e-6,inner_iteration =10000):
+    # params = [X,y]
+    super().__init__(params)
+    self.subproblem_eps = subproblem_eps
+    self.inner_iteration = inner_iteration
+    
+
+  def __call__(self,x,delta = 0.1,eps = 1e-12):
+    X = self.params[0]
+    y = self.params[1]
+    data_num,feature_num = X.shape
+    _,class_num = y.shape
+    
+    
+    def func(x_input):
+      return -self.inner_func(x_input,x=x)
+    
+    def prox(x,t):
+      return projection_ball2(x,t,r = delta)
+    
+    x0 = torch.zeros(feature_num,device=X.device,dtype = X.dtype)
+    delta_X = self.solve_subproblem(func=func,prox=prox,x0=x0,eps=self.subproblem_eps,iteration=self.inner_iteration)
+    W = x[:feature_num*class_num].reshape(feature_num,class_num)
+    Z_ = X@W
+    delta_Z = delta_X@W
+    Z = Z_ + delta_Z
+    sum_Z = torch.logsumexp(Z,1)
+    sum_Z = sum_Z.unsqueeze(1)
+    out1 = -Z + eps + sum_Z
+    return torch.mean(torch.sum(out1*y,dim = 1))
+
+  def inner_func(self,delta_X,x,eps = 1e-12):
+    X = self.params[0]
+    y = self.params[1]
+    data_num,feature_num = X.shape
+    _,class_num = y.shape
+    W = x[:feature_num*class_num].reshape(feature_num,class_num)
+    Z_ = X@W
+    # [datanum,classnum]
+    delta_Z = delta_X@W
+    # [classnum]
+    Z = Z_ + delta_Z 
+    sum_Z = torch.logsumexp(Z,1)
+    sum_Z = sum_Z.unsqueeze(1)
+    out1 = -Z + eps + sum_Z
+    return torch.mean(torch.sum(out1*y,dim = 1))
+
+    
+  
+  def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
+    solver = BackTrackingPGD(func=func,prox=prox)
+    solver.__iter__(x0=x0,iteration=iteration,eps=eps)
+    return solver.get_solution()
 
 class regularizedfunction(Function):
   def __init__(self,f,params):

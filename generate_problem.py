@@ -56,6 +56,11 @@ def generate(mode,properties):
         f = generate_regularized(f,properties)
     elif mode == "adverserial attack":
         f,x0 = generate_adverserial(properties)
+    elif mode == "robust adversarial":
+        f,x0 = generate_robust_adversarial(properties)
+    elif mode == "regularized robust adversarial":
+        f,x0 = generate_robust_adversarial(properties)
+        f = generate_regularized(f,properties)
     else:
         raise ValueError("No functions.")
     return f,x0
@@ -82,9 +87,6 @@ def generate_max_linear(properties):
     params = [A,b]
     f = max_linear(params)
     return f,x0
-
-
-    
 
 def generate_test(properties,local = False):
     dim = int(properties["dim"])
@@ -312,6 +314,44 @@ def generate_adverserial(properties):
     features_num = X.shape[1]
     f = adversarial(params=params)
     x0 = torch.ones(features_num)
+    return f,x0
+
+def generate_robust_adversarial(properties):
+    data_name = properties["data-name"]
+    if data_name == "Scotus":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/scotus_lexglue_tfidf_train.svm.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+        y=F.one_hot(y)
+        data_num,feature_num = X.shape
+        _,class_num = y.shape
+        dim = feature_num*class_num + class_num
+        
+
+    elif data_name == "news20":
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        path_dataset = "./data/logistic/news20.bz2"
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = y.to(torch.int64)
+        y=F.one_hot(y)
+        data_num,feature_num = X.shape
+        _,class_num = y.shape
+        dim = feature_num*class_num + class_num
+        
+    params = [X,y]
+    x0 = torch.zeros(dim)
+    inner_iteration = int(properties["inner-iteration"])
+    subproblem_eps = float(properties["subproblem-eps"])
+    f = robust_adversarial(params=params,subproblem_eps=subproblem_eps,inner_iteration=inner_iteration)
     return f,x0
 
     

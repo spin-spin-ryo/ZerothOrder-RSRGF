@@ -60,19 +60,25 @@ def run(config_name,save_solution = False):
   logger.info(savepath)
   os.makedirs(savepath,exist_ok= True)
   for i in range(trial_numbers):
-    x = x0.clone().detach()
-    x.requires_grad_(True)
-    solver.__iter__(func,x,params,iterations,savepath,interval)
-    logger.info(f"{iterations}")
-    values_dict = get_element_json(solver.save_values)
-    for k,v in values_dict.items():
-      logger.info(f"{k}:{v}")
-    save_result_json(os.path.join(savepath,"result.json"),values_dict,iterations)
     count = count_files(savepath,r"fvalues.*\.pth")
     if count == 0:
       suffix = ""
     else:
       suffix = str(count)
+    x = x0.clone().detach()
+    x.requires_grad_(True)
+    solver.__iter__(func=func,
+                    x0=x,
+                    params=params,
+                    iterations=iterations,
+                    savepath=savepath,
+                    suffix=suffix,
+                    interval=interval)
+    logger.info(f"{iterations}")
+    values_dict = get_element_json(solver.save_values)
+    for k,v in values_dict.items():
+      logger.info(f"{k}:{v}")
+    save_result_json(os.path.join(savepath,"result.json"),values_dict,iterations)
     for k,v in solver.save_values.items():
       torch.save(v,os.path.join(savepath,k[0]+suffix+".pth"))
   
