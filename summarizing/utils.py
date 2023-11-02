@@ -169,7 +169,10 @@ def plot_result(target_pathes,*args):
             best_file_name = fvalues_files[0]
             min_value = torch.min(torch.load(os.path.join(target_path,best_file_name)))
             for f in fvalues_files[1:]:
-                temp_min_value = torch.min(torch.load(os.path.join(target_path,f)))
+                __temp__tensor = torch.load(os.path.join(target_path,f))
+                temp_min_value = torch.min(__temp__tensor)
+                if temp_min_value == 0:
+                    temp_min_value = torch.min(__temp__tensor[__temp__tensor>0])
                 if temp_min_value < min_value:
                     min_value = temp_min_value
                     best_file_name = f
