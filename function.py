@@ -161,12 +161,12 @@ class adversarial(Function):
     return
 
 class robust_adversarial(Function):
-  def __init__(self, params=[],subproblem_eps = 1e-6,inner_iteration =10000):
+  def __init__(self, params=[],delta=0.1,subproblem_eps = 1e-6,inner_iteration =10000):
     # params = [X,y]
     super().__init__(params)
     self.subproblem_eps = subproblem_eps
     self.inner_iteration = inner_iteration
-    self.delta = 0.1
+    self.delta = delta
     
 
   def __call__(self,x,eps = 1e-12):
@@ -213,7 +213,7 @@ class robust_adversarial(Function):
   
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
     solver = BackTrackingAccerelatedPGD(func=func,prox=prox)
-    solver.__iter__(x0=x0,iteration=iteration,eps=eps)
+    solver.__iter__(x0=x0,iteration=iteration,eps=eps,restart=True)
     return solver.get_solution()
 
 class regularizedfunction(Function):

@@ -351,7 +351,8 @@ def generate_robust_adversarial(properties):
     x0 = torch.zeros(dim)
     inner_iteration = int(properties["inner-iteration"])
     subproblem_eps = float(properties["subproblem-eps"])
-    f = robust_adversarial(params=params,subproblem_eps=subproblem_eps,inner_iteration=inner_iteration)
+    delta = float(properties["delta"])
+    f = robust_adversarial(params=params,delta=delta,subproblem_eps=subproblem_eps,inner_iteration=inner_iteration)
     return f,x0
 
     
