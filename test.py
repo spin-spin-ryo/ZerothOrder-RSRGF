@@ -1,34 +1,71 @@
-from solver import BackTrackingPGD,projection_ball2,BackTrackingAccerelatedPGD
+from function import robust_logistic
 import torch
+import time
 
-dim = 10000
-A = torch.randn(1000,dim)
-b = torch.randn(1000)
+device = "cuda"
+dtype = torch.float64
+from sklearn.datasets import load_svmlight_file
+from utils import convert_coo_torch
+path_dataset = "./data/logistic/news20.binary.bz2"
+X,y = load_svmlight_file(path_dataset)
+X = X.tocoo()
+X = convert_coo_torch(X)
+y = torch.from_numpy(y)
 
-r = 0.1
+X = X.to(device).to(dtype)
+y = y.to(device).to(torch.int64)
+data_num,dim = X.shape
 
-def func(x):
-    return torch.logsumexp(A@x+b,dim = 0)
+delta = 1e-5
+inner_iteration = 100000
+subproblem_eps = 1e-3
 
-def prox(x,t):
-    return projection_ball2(x=x,t=t,r=r)
+reduced_dim = 100
 
-solver1 = BackTrackingPGD(func=func,prox=prox)
-solver2 = BackTrackingAccerelatedPGD(func=func,prox=prox)
+f = robust_logistic(params=[X,y],
+                    delta=delta,
+                    inner_iteration=inner_iteration,
+                    subproblem_eps=subproblem_eps)
 
-x = torch.randn(dim)
+
+
 iteration = 100
-solver1.__iter__(x0=x,
-                 iteration=iteration)
 
-print(solver1.get_function_value())
-print(solver1.get_iteration())
-print(solver1.get_grad_norm())
+# print("run projection")
+# f.projection = True
+# u = torch.randn(reduced_dim,device=device,dtype=dtype)
+# torch.cuda.synchronize()
+# start = time.time()
+# for i in range(iteration):
+#     x = torch.randn(dim,device = device,dtype=dtype)
+#     f(x,u)
+# torch.cuda.synchronize()
+# print(time.time() - start)
 
-# solver2.__iter__(x0=x,
-#                  iteration=iteration)
+print("run func")
+f.projection = False
+torch.cuda.synchronize()
+start = time.time()
+for i in range(iteration):
+    x = torch.randn(dim,device = device,dtype=dtype)
+    f(x)
+torch.cuda.synchronize()
+print(time.time() - start)
 
-# print(solver2.get_function_value())
-# print(solver2.get_iteration())
-# print(solver2.get_grad_norm())
-
+# u = torch.randn(reduced_dim,device=device,dtype=dtype)
+# for i in range(iteration):
+#     x = torch.randn(dim,device = device,dtype=dtype)
+    # f.projection = False
+    # x_original = f.get_subproblem_solution(x)
+    # print(x_original.shape)
+    # print("original",torch.linalg.norm(x_original))
+    
+    # f.projection = True
+    # x_projection = f.get_subproblem_solution(x,u)
+    # print(x_projection.shape)
+    # print("projection",torch.linalg.norm(x_projection))
+    # P = torch.randn(reduced_dim,dim,device = device,dtype=dtype)/(dim**0.5)
+    # P = torch.concat((x.unsqueeze(0),P),dim=0)
+    # x_projection_dim = torch.linalg.lstsq(P,x_projection).solution
+    # print("projection_dim",torch.linalg.norm(x_projection_dim))
+    

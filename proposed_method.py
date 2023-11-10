@@ -13,8 +13,6 @@ class proposed(__optim__):
         self.central = central
         super().__init__()
         self.projection = projection
-        if self.projection:
-            self.func.projection = self.projection
         print("central",self.central)
     
     def __direction__(self,loss):
@@ -78,6 +76,8 @@ class proposed(__optim__):
         self.xk = x0
         self.xk.requires_grad_(False)
         self.func = func
+        if self.projection:
+            self.func.projection = self.projection
         self.__save_init__(iterations,fvalues = "min",time_values = "max",norm_dir = "iter")
         for i in range(iterations):
             self.__iter_per__(i)

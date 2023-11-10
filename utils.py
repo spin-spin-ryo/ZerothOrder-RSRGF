@@ -81,3 +81,17 @@ def generate_sub_orthogonal(reduced_dim,dim):
    a = v.transpose(0,1)[:reduced_dim]
    G = torch.eye(reduced_dim,dim,device = DEVICE)-2*a@v
    return G
+
+
+def modifying_parameters(solver_name,reduced_dims,heuristic_intervals,sparsity,projection):
+   if solver_name == "RGF":
+      reduced_dims = [None]
+      heuristic_intervals = [None]
+      sparsity = None
+      projection = None
+   elif solver_name == "proposed":
+      if projection is None:
+         projection = False
+   
+   return reduced_dims,heuristic_intervals,sparsity,projection
+            

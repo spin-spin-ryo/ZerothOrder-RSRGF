@@ -4,17 +4,18 @@ from environments import CONFIGPATH
 import json
 from main import run,make_shfile
 import subprocess
+from utils import modifying_parameters
 
-split_sh = True
+split_sh = False
 
-problem = "regularized robust adversarial"
+problem = "regularized robust logistic"
 property = None
 dim = None
 rank = None
 subspace = None
 bias = None
 ord = 1
-coef = 1e-6
+coef = 1e-7
 fused_flag = False
 data_name = "news20"
 data_num = None
@@ -23,30 +24,32 @@ inner_iteration = 100000
 subproblem_eps = 1e-7
 delta = 1e-5
 
-lrs = [8,7,6,5,4,3,2,1]
-rate = 10
-for i in range(len(lrs)):
-    lrs[i] *= rate
-# lrs = [0.01,0.02,0.009]
-# solver_name = "RGF"
+# lrs = [8,7,6,5,4,3,2,1]
+# rate = 10
+# for i in range(len(lrs)):
+#     lrs[i] *= rate
+lrs = [1e-1,1e-2]
+solver_name = "RGF"
 
-# lrs = [100,200,90]
-solver_name = "proposed"
-
-
-mus = [1e-10]
-sample_sizes = [1]
-reduced_dims = [100]
+# lrs = [10000]
+# solver_name = "proposed"
+projection = None
+reduced_dims = [None]
 heuristic_intervals = [None]
 sparsity = None
-central = True
-projection = True
 
-iterations =10000
-interval = 1000
+mus = [1e-8]
+sample_sizes = [10]
+central = True
+
+
+iterations =10
+interval = 10
 trial_numbers = 1
 count = 0
 step_schedule = "constant"
+
+reduced_dims,heuristic_intervals,sparsity,projection = modifying_parameters(solver_name,reduced_dims,heuristic_intervals,sparsity,projection)
 
 
 if __name__ == "__main__":

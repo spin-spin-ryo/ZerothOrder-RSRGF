@@ -61,6 +61,11 @@ def generate(mode,properties):
     elif mode == "regularized robust adversarial":
         f,x0 = generate_robust_adversarial(properties)
         f = generate_regularized(f,properties)
+    elif mode == "robust logistic":
+        f,x0 = generate_robust_logistic(properties)
+    elif mode == "regularized robust logistic":
+        f,x0 = generate_robust_logistic(properties)
+        f = generate_regularized(f,properties,projection=True)
     else:
         raise ValueError("No functions.")
     return f,x0
@@ -167,7 +172,7 @@ def generate_logistic(properties):
     f = logistic(params)
     return f,x0
 
-def generate_regularized(f,properties):
+def generate_regularized(f,properties,projection = False):
     p = torch.tensor(properties["ord"]).to(torch.int32)
     coef = torch.tensor(properties["coef"])
     fused_flag = properties["fused"]
@@ -178,7 +183,10 @@ def generate_regularized(f,properties):
     else:
         A = None
     params = [p,coef,A]
-    f_r = regularizedfunction(f,params)
+    if projection:
+        f_r = projectionregularizedfunction(f,params)
+    else:
+        f_r = regularizedfunction(f,params)
     return f_r
     
 def generate_LinearRegression(properties,local = False):
@@ -356,3 +364,28 @@ def generate_robust_adversarial(properties):
     return f,x0
 
     
+def generate_robust_logistic(properties):
+    data_name = properties["data-name"]
+    if data_name == "rcv1":
+        # [20242,47236]
+        path_dataset = "./data/logistic/rcv1_train.binary.bz2"
+        
+    elif data_name == "news20":
+        # [19996,1355191]
+        path_dataset = "./data/logistic/news20.binary.bz2"
+        
+    from sklearn.datasets import load_svmlight_file
+    from utils import convert_coo_torch
+    X,y = load_svmlight_file(path_dataset)
+    X = X.tocoo()
+    X = convert_coo_torch(X)
+    y = torch.from_numpy(y)
+    y = y.to(torch.int64)
+    data_num,feature_num = X.shape
+    params = [X,y]
+    x0 = torch.zeros(feature_num)
+    inner_iteration = int(properties["inner-iteration"])
+    subproblem_eps = float(properties["subproblem-eps"])
+    delta = float(properties["delta"])
+    f = robust_logistic(params=params,delta=delta,inner_iteration=inner_iteration,subproblem_eps=subproblem_eps)
+    return f,x0
