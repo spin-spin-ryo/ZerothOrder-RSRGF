@@ -7,11 +7,14 @@ import time
 
 
 class proposed(__optim__):
-    def __init__(self,determine_stepsize,central = False):
+    def __init__(self,determine_stepsize,central = False,projection = False):
         #params = [reduced_dim,sample_size,mu,lr]
         self.determine_stepsize  = determine_stepsize
         self.central = central
         super().__init__()
+        self.projection = projection
+        if self.projection:
+            self.func.projection = self.projection
         print("central",self.central)
     
     def __direction__(self,loss):
@@ -24,16 +27,27 @@ class proposed(__optim__):
         subspace_dir = None
         U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
         if self.central:
-            for i in range(sample_size):
-                g1 = subspace_func(mu*U[i])
-                g2 = subspace_func(-mu*U[i])
-                if subspace_dir is None:
-                    subspace_dir = (g1 - g2)/(2*mu) * U[i]
-                else:
-                    subspace_dir += (g1 - g2)/(2*mu) * U[i]
+            if self.projection:
+                for i in range(sample_size):
+                    m = mu*P@U[i]
+                    g1 = self.func(self.xk + m,u= mu*U[i])
+                    g2 = self.func(self.xk - m,u= mu*U[i])
+                    if subspace_dir is None:
+                        subspace_dir = (g1 - g2)/(2*mu) * U[i]
+                    else:
+                        subspace_dir += (g1 - g2)/(2*mu) * U[i]
+            else:
+                for i in range(sample_size):
+                    m = mu*P@U[i]
+                    g1 = self.func(self.xk + m)
+                    g2 = self.func(self.xk - m)
+                    if subspace_dir is None:
+                        subspace_dir = (g1 - g2)/(2*mu) * U[i]
+                    else:
+                        subspace_dir += (g1 - g2)/(2*mu) * U[i]
         else:
             for i in range(sample_size):
-                g1 = subspace_func(mu*U[i])
+                g1 = self.func(self.xk + m)
                 if subspace_dir is None:
                     subspace_dir = (g1 - loss.item())/mu * U[i]
                 else:
@@ -41,7 +55,12 @@ class proposed(__optim__):
         return - P@subspace_dir
 
     def __step__(self,i):
-        if self.determine_stepsize is not None:
+        if type(self.determine_stepsize) is str:
+            lr = self.params[3]
+            dim = self.xk.shape[0]
+            reduced_dim = self.params[0]
+            return lr*((dim)**2)/(reduced_dim**2)
+        elif self.determine_stepsize is not None:
             return self.determine_stepsize(i);
         else:
             lr = self.params[3]

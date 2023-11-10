@@ -12,6 +12,8 @@ def decreasing_stepsize_half(i):
 def get_determine_step(init_lr,step_schedule):
     if step_schedule == "constant":
         return None
+    elif step_schedule == "proposed":
+        return "proposed"
     elif step_schedule == "decreasing":
         determine_step = lambda i: init_lr*decreasing_stepsize(i)
         return determine_step
@@ -59,10 +61,11 @@ def get_solver(solver_name,params_json):
         mu = float(params_json["mu"])
         lr = float(params_json["lr"])
         central = bool(params_json["central"])
+        projection = bool(params_json["projection"])
         solver_params = [reduced_dim,sample_size,mu,lr]
         step_schedule = params_json["step_schedule"]
         determine_step = get_determine_step(lr,step_schedule)
-        solver = proposed(determine_step,central)
+        solver = proposed(determine_step,central,projection=projection)
     elif solver_name == "proposed-heuristic":
         reduced_dim = int(params_json["reduced_dim"])
         sample_size = int(params_json["sample_size"])

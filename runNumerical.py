@@ -7,40 +7,42 @@ import subprocess
 
 split_sh = True
 
-problem = "robust adversarial"
+problem = "regularized robust adversarial"
 property = None
 dim = None
 rank = None
 subspace = None
 bias = None
-ord = None
-coef = None
+ord = 1
+coef = 1e-6
+fused_flag = False
 data_name = "news20"
 data_num = None
-fused_flag = None
 epoch_num = None
 inner_iteration = 100000
 subproblem_eps = 1e-7
 delta = 1e-5
 
-lrs = [1e-2]
-# lrs = [10000,20000,30000,40000]
+lrs = [8,7,6,5,4,3,2,1]
+rate = 10
+for i in range(len(lrs)):
+    lrs[i] *= rate
+# lrs = [0.01,0.02,0.009]
+# solver_name = "RGF"
 
-solver_name = "RGF"
-# solver_name = "OZD"
-# solver_name = "proposed"
-# solver_name = "proposed-heuristic"
-# solver_name = "proposed-sparse"
-# solver_name = "AGD"
+# lrs = [100,200,90]
+solver_name = "proposed"
 
-mus = [1e-8]
+
+mus = [1e-10]
 sample_sizes = [1]
 reduced_dims = [100]
 heuristic_intervals = [None]
 sparsity = None
 central = True
+projection = True
 
-iterations =100000
+iterations =10000
 interval = 1000
 trial_numbers = 1
 count = 0
@@ -81,7 +83,8 @@ if __name__ == "__main__":
                 "step_schedule":step_schedule,
                 "interval":sample_interval,
                 "sparsity":sparsity,
-                "central":central
+                "central":central,
+                "projection":projection
             },
             "iterations":iterations,
             "interval":interval,

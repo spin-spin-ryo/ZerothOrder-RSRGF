@@ -58,10 +58,71 @@ class norm_function(Function):
 
 class logistic(Function):
   def __call__(self,x):
+    # Xの最後には列には1だけのものがある
+    # yは-1,1で
     X = self.params[0]
     y = self.params[1]
     a = X@x
     return torch.mean(torch.log(1 + torch.exp(-y*a)))
+
+class adversarial_logistic(Function):
+  def __init__(self, params=[],inner_iteration = 100000,subproblem_eps = 1e-5):
+    self.inner_iteration = inner_iteration
+    self.subproblem_eps = subproblem_eps
+    self.projection = False
+
+    super().__init__(params)
+
+  def __call__(self, w,u = None):
+    # Xの最後には列には1だけのものがある
+    # yは-1,1で
+    
+    func,prox,x0 = self.__set__inner_call__(w=w,u=u)
+    
+    return self.solve_subproblem(func=func,prox=prox,x0=x0,eps=self.subproblem_eps,iteration=self.inner_iteration)
+  
+  def __set__inner_call__(self,w,u=None):
+    X = self.params[0]
+    data_num,feature_num = X.shape
+    self._a_ = X@w
+      
+    if self.projection:
+      # u はmu_k/sqrt{n} u
+      def func(x_input):
+        return -self.__inner_projection_call__(x_input[0],x_input[1:],u=u)
+      def prox(x,t):
+        return projection_ball2(x,t,r = self.delta*feature_num**0.5)
+      x0 = torch.zeros(u.shape[0]+1,device=X.device,dtype = X.dtype)
+
+    else:
+      def func(x_input):
+        return -self.__inner_call__(x_input,w=w)
+      
+      def prox(x,t):
+        return projection_ball2(x,t,r = self.delta)
+      x0 = torch.zeros(feature_num,device=X.device,dtype = X.dtype)
+    
+    return func,prox,x0
+    
+  def __inner_call__(self,delta_X,w):
+    X = self.params[0]
+    y = self.params[1]
+    a = self._a_ + delta_X@w
+    return torch.mean(torch.log(1 + torch.exp(-y*a)))
+  
+  def __inner_projection_call__(self,alpha,beta,u):
+    y = self.params[1]
+    a = self._a_ + alpha + u@beta
+    return torch.mean(torch.log(1 + torch.exp(-y*a)))
+  
+  def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
+    solver = BackTrackingAccerelatedPGD(func=func,prox=prox)
+    solver.__iter__(x0=x0,iteration=iteration,eps=eps,restart=True)
+    return solver.get_function_value()
+
+
+
+
 
 class softmax(Function):
   def __call__(self,x,eps = 1e-12):
@@ -187,7 +248,7 @@ class robust_adversarial(Function):
     W = x[:feature_num*class_num].reshape(feature_num,class_num)
     Z_ = X@W
     delta_Z = delta_X@W
-    Z = Z_ + delta_Z
+    Z = Z_ + delta_Z + x[feature_num*class_num:]
     sum_Z = torch.logsumexp(Z,1)
     sum_Z = sum_Z.unsqueeze(1)
     out1 = -Z + eps + sum_Z
@@ -203,7 +264,7 @@ class robust_adversarial(Function):
     # [datanum,classnum]
     delta_Z = delta_X@W
     # [classnum]
-    Z = Z_ + delta_Z 
+    Z = Z_ + delta_Z + x[feature_num*class_num:]
     sum_Z = torch.logsumexp(Z,1)
     sum_Z = sum_Z.unsqueeze(1)
     out1 = -Z + eps + sum_Z
