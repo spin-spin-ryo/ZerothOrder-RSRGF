@@ -66,6 +66,7 @@ class logistic(Function):
     return torch.mean(torch.log(1 + torch.exp(-y*a)))
 
 class robust_logistic(Function):
+  # torch.log and torch.exp are bad
   def __init__(self, params=[],delta = 0.1,inner_iteration = 100000,subproblem_eps = 1e-5):
     self.inner_iteration = inner_iteration
     self.subproblem_eps = subproblem_eps
@@ -76,7 +77,7 @@ class robust_logistic(Function):
 
   def __call__(self, w,u = None):
     # Xの最後には列には1だけのものがある
-    # yは-1,1で
+    # yは0,1で
     # noiseは1以外のものに対して
     
     func,prox,x0 = self.__set__inner_call__(w=w,u=u)
@@ -109,12 +110,12 @@ class robust_logistic(Function):
   def __inner_call__(self,delta_X,w):
     y = self.params[1]
     a = self._a_ + delta_X@w
-    return torch.mean(torch.log(1 + torch.exp(-y*a)))
+    return F.binary_cross_entropy(F.sigmoid(a),y)
   
   def __inner_projection_call__(self,alpha,beta,u):
     y = self.params[1]
     a = self._a_ + alpha + u@beta
-    return torch.mean(torch.log(1 + torch.exp(-y*a)))
+    return F.binary_cross_entropy(F.sigmoid(a),y)
   
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
     solver = BackTrackingAccerelatedPGD(func=func,prox=prox)

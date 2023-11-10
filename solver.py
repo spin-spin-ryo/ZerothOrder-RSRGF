@@ -87,9 +87,11 @@ class BackTrackingAccerelatedPGD(BackTrackingPGD):
         self.t = 1
         self.v = None
         self.xk1 = None
+        self.k = 0
 
     def __iter__(self,x0,iteration,eps=1e-6,beta = 0.8,restart = False):
         self.iter = 0
+        self.k = 0
         self.xk = x0.clone().detach()
         self.xk1 = x0.clone().detach()
         for idx in range(iteration):
@@ -109,7 +111,8 @@ class BackTrackingAccerelatedPGD(BackTrackingPGD):
 
     def __one_iter__(self,eps,beta,restart):
         self.iter +=1
-        k = self.iter
+        self.k += 1
+        k = self.k
         self.v = self.xk + (k-2)/(k+1)*(self.xk - self.xk1)
         self.v.requires_grad = True
         f = self.func(self.v)
@@ -125,7 +128,7 @@ class BackTrackingAccerelatedPGD(BackTrackingPGD):
             self.v = None
             if restart:
                 if self.func(self.xk) > self.func(self.xk1):
-                    self.iter = 0      
+                    self.k = 0      
         return False
 
     def get_grad_norm(self,beta = 0.8):
