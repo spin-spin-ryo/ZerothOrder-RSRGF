@@ -369,18 +369,30 @@ def generate_robust_logistic(properties):
     if data_name == "rcv1":
         # [20242,47236]
         path_dataset = "./data/logistic/rcv1_train.binary.bz2"
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = (y+1)/2
+        y = y.to(torch.int64)
         
     elif data_name == "news20":
         # [19996,1355191]
         path_dataset = "./data/logistic/news20.binary.bz2"
+        from sklearn.datasets import load_svmlight_file
+        from utils import convert_coo_torch
+        X,y = load_svmlight_file(path_dataset)
+        X = X.tocoo()
+        X = convert_coo_torch(X)
+        y = torch.from_numpy(y)
+        y = (y+1)/2
+        y = y.to(torch.int64)
+    elif data_name == "random":
+        X = torch.load("./data/logistic/X.pth")
+        y = torch.load("./data/logistic/y.pth")
         
-    from sklearn.datasets import load_svmlight_file
-    from utils import convert_coo_torch
-    X,y = load_svmlight_file(path_dataset)
-    X = X.tocoo()
-    X = convert_coo_torch(X)
-    y = torch.from_numpy(y)
-    y = y.to(torch.int64)
     data_num,feature_num = X.shape
     params = [X,y]
     x0 = torch.zeros(feature_num)

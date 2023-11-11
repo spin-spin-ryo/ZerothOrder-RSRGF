@@ -5,8 +5,8 @@ import torch.nn.functional as F
 
 device = "cpu"
 dtype = torch.float64
-from sklearn.datasets import load_svmlight_file
-from utils import convert_coo_torch
+# from sklearn.datasets import load_svmlight_file
+# from utils import convert_coo_torch
 
 # path_dataset = "./data/logistic/news20.binary.bz2"
 # X,y = load_svmlight_file(path_dataset)

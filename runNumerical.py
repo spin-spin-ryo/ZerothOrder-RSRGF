@@ -6,7 +6,7 @@ from main import run,make_shfile
 import subprocess
 from utils import modifying_parameters
 
-split_sh = False
+split_sh = True
 
 problem = "regularized robust logistic"
 property = None
@@ -17,21 +17,21 @@ bias = None
 ord = 1
 coef = 1e-7
 fused_flag = False
-data_name = "news20"
+data_name = "random"
 data_num = None
 epoch_num = None
 inner_iteration = 100000
 subproblem_eps = 1e-7
-delta = 1e-5
+delta = 0.1
 
 # lrs = [8,7,6,5,4,3,2,1]
 # rate = 10
 # for i in range(len(lrs)):
 #     lrs[i] *= rate
-lrs = [1e-1,1e-2]
+lrs = [1e-4,1e-5]
 solver_name = "RGF"
 
-# lrs = [10000]
+# lrs = [1,1e-1]
 # solver_name = "proposed"
 projection = None
 reduced_dims = [None]
@@ -43,7 +43,7 @@ sample_sizes = [10]
 central = True
 
 
-iterations =10
+iterations =10000
 interval = 10
 trial_numbers = 1
 count = 0
