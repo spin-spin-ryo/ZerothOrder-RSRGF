@@ -253,10 +253,15 @@ def plot_result(target_pathes,*args):
     if "time" in xscale:
         for index,(p,v,t) in enumerate(zip(target_pathes,fvalues,time_values)):
             print(p)
-            if "proposed" in p:
-                plt.plot(t[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
+            # start = 0　想定
+            if end != -1:
+                index = t < end
             else:
-                plt.plot(t[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
+                index = torch.ones(len(t)).to(torch.bool)
+            if "proposed" in p:
+                plt.plot(t[index][::full_line],v[index][::full_line],label = labeled[p])
+            else:
+                plt.plot(t[index][::full_line],v[index][::full_line],label = labeled[p],linestyle = "dotted")
         plt.xlabel("Time[s]")
     
     else:
