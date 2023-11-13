@@ -70,7 +70,6 @@ class robust_logistic(Function):
   def __init__(self, params=[],delta = 0.1,inner_iteration = 100000,subproblem_eps = 1e-5):
     self.inner_iteration = inner_iteration
     self.subproblem_eps = subproblem_eps
-    self.projection = False
     self.delta = delta
 
     super().__init__(params)
@@ -89,7 +88,7 @@ class robust_logistic(Function):
     data_num,feature_num = X.shape
     self._a_ = X@w
       
-    if self.projection:
+    if u is not None:
       # u はmu_k/sqrt{n} u
       def func(x_input):
         return -self.__inner_projection_call__(x_input[0],x_input[1:],u=u)
@@ -120,6 +119,7 @@ class robust_logistic(Function):
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
     solver = BackTrackingAccerelatedPGD(func=func,prox=prox)
     solver.__iter__(x0=x0,iteration=iteration,eps=eps,restart=True)
+    logger.info(solver.get_iteration())
     return solver.get_function_value()
   
   def solve_subproblem_solution(self,func,prox,x0,eps=1e-6,iteration = 10000):
@@ -131,7 +131,6 @@ class robust_logistic(Function):
   def get_subproblem_solution(self, w,u = None):
 
     func,prox,x0 = self.__set__inner_call__(w=w,u=u)
-    
     return self.solve_subproblem_solution(func=func,prox=prox,x0=x0,eps=self.subproblem_eps,iteration=self.inner_iteration)
    
 class softmax(Function):

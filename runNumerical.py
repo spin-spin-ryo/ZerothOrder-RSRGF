@@ -20,7 +20,7 @@ fused_flag = False
 data_name = "random"
 data_num = None
 epoch_num = None
-inner_iteration = 100000
+inner_iteration = 10000000
 subproblem_eps = 1e-7
 delta = 0.1
 
@@ -28,7 +28,7 @@ delta = 0.1
 # rate = 10
 # for i in range(len(lrs)):
 #     lrs[i] *= rate
-lrs = [1e-4,1e-5]
+lrs = [1e-4]
 solver_name = "RGF"
 
 # lrs = [1,1e-1]
