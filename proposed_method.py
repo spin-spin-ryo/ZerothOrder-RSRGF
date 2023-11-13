@@ -21,13 +21,13 @@ class proposed(__optim__):
         mu = self.params[2]
         dim = self.xk.shape[0]
         P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(dim,device = self.device,dtype = self.dtype))
-        subspace_func = lambda d: self.func(self.xk + P@d)
         subspace_dir = None
-        U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
+        U = torch.randn(sample_size,reduced_dim+1,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
+        U[:,0]=1
         if self.central:
             if self.projection:
                 for i in range(sample_size):
-                    m = mu*P@U[i]
+                    m = mu*P@U[i,1:]
                     g1 = self.func(self.xk + m,u= mu*U[i])
                     g2 = self.func(self.xk - m,u= mu*U[i])
                     if subspace_dir is None:

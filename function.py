@@ -111,9 +111,9 @@ class robust_logistic(Function):
     a = self._a_ + delta_X@w
     return F.binary_cross_entropy(F.sigmoid(a),y)
   
-  def __inner_projection_call__(self,alpha,beta,u):
+  def __inner_projection_call__(self,alpha,u):
     y = self.params[1]
-    a = self._a_ + alpha + u@beta
+    a = self._a_ + alpha@u
     return F.binary_cross_entropy(F.sigmoid(a),y)
   
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
