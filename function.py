@@ -94,7 +94,7 @@ class robust_logistic(Function):
         return -self.__inner_projection_call__(x_input,u=u)
       def prox(x,t):
         return projection_ball2(x,t,r = self.delta)
-      x0 = torch.zeros(u.shape[0]+1,device=X.device,dtype = X.dtype)
+      x0 = torch.zeros(u.shape[0],device=X.device,dtype = X.dtype)
 
     else:
       def func(x_input):
