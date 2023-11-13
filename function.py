@@ -119,7 +119,7 @@ class robust_logistic(Function):
   def solve_subproblem(self,func,prox,x0,eps=1e-6,iteration = 10000):
     solver = BackTrackingAccerelatedPGD(func=func,prox=prox)
     solver.__iter__(x0=x0,iteration=iteration,eps=eps,restart=True)
-    logger.info(solver.get_iteration())
+    # logger.info(solver.get_iteration())
     return solver.get_function_value()
   
   def solve_subproblem_solution(self,func,prox,x0,eps=1e-6,iteration = 10000):

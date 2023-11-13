@@ -20,21 +20,26 @@ fused_flag = False
 data_name = "random"
 data_num = None
 epoch_num = None
-inner_iteration = 10000000
+inner_iteration = 1000000
 subproblem_eps = 1e-7
-delta = 0.1
+delta = 0.01
 
 # lrs = [8,7,6,5,4,3,2,1]
 # rate = 10
 # for i in range(len(lrs)):
 #     lrs[i] *= rate
-lrs = [1e-4]
-solver_name = "RGF"
+# lrs = [1e-4]
+# solver_name = "RGF"
+# projection = None
+# reduced_dims = [None]
+# heuristic_intervals = [None]
+# sparsity = None
 
-# lrs = [1,1e-1]
-# solver_name = "proposed"
-projection = None
-reduced_dims = [None]
+
+lrs = [1,1e-1,1e-2]
+solver_name = "proposed"
+projection = True
+reduced_dims = [100]
 heuristic_intervals = [None]
 sparsity = None
 
