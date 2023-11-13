@@ -114,6 +114,7 @@ def modify_local2global(path):
 
 def plot_result(target_pathes,*args):
     fvalues = []
+    time_values = []
     fvalues_std = []
     labeledflag = False
     labeled = {}
@@ -177,6 +178,8 @@ def plot_result(target_pathes,*args):
                     min_value = temp_min_value
                     best_file_name = f
             fvalues.append(torch.load(os.path.join(target_path,best_file_name)))
+            time_file_name = get_count_from_filename(best_file_name)
+            time_values.append(torch.load(os.path.join(target_path,time_file_name)))
         elif mode == "mean":
             fvalues_files = find_files(target_path,r"fvalues.*\.pth")
             if end == -1:
@@ -247,24 +250,35 @@ def plot_result(target_pathes,*args):
                 fvalue_std = torch.std(sum_values,dim = 0)
                 fvalues.append(fvalue_mean)
                 fvalues_std.append(fvalue_std)
-
-    for index,(p,v) in enumerate(zip(target_pathes,fvalues)):
-        print(p)
-        if "proposed" in p:
-            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
-        else:
-            plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
-        if mode == "mean std":
-            plt.fill_between(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line] + fvalues_std[index][start:end][::full_line],v[start:end][::full_line] - fvalues_std[index][start:end][::full_line],alpha = 0.15)
+    if "time" in xscale:
+        for index,(p,v,t) in enumerate(zip(target_pathes,fvalues,time_values)):
+            print(p)
+            if "proposed" in p:
+                plt.plot(t[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
+            else:
+                plt.plot(t[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
+        plt.xlabel("Time[s]")
+    
+    else:
+        for index,(p,v) in enumerate(zip(target_pathes,fvalues)):
+            print(p)
+            if "proposed" in p:
+                plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p])
+            else:
+                plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
+            if mode == "mean std":
+                plt.fill_between(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line] + fvalues_std[index][start:end][::full_line],v[start:end][::full_line] - fvalues_std[index][start:end][::full_line],alpha = 0.15)
+        plt.xlabel("Iterations")
+    
+    
     if not labeledflag:
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
     else:
         plt.legend()
-    plt.xlabel("Iterations")
     plt.ylabel(r"f(x)")
-    if xscale != "":
+    if "log" in xscale:
         plt.xscale("log")
-    if yscale != "":
+    if yscale == "log":
         plt.yscale("log")
     plt.show()
     
@@ -277,3 +291,7 @@ def add_name_all_dirs(add_char,init_dir,check = True):
             if not check:
                 os.rename(init_dir+"/"+dir_name,init_dir+"/"+dir_name+add_char)
 
+def get_count_from_filename(file_name):
+    # 仕様が悪い 入力はfvalues{}.pth
+    count = file_name.replace("fvalues","")
+    return "time_values"+count
