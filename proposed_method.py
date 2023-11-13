@@ -22,8 +22,11 @@ class proposed(__optim__):
         dim = self.xk.shape[0]
         P = torch.randn(dim,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(dim,device = self.device,dtype = self.dtype))
         subspace_dir = None
-        U = torch.randn(sample_size,reduced_dim+1,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
-        U[:,0]=1
+        if self.projection:
+            U = torch.randn(sample_size,reduced_dim+1,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
+            U[:,0]=1
+        else:
+            U = torch.randn(sample_size,reduced_dim,device = self.device,dtype = self.dtype)/torch.sqrt(torch.tensor(sample_size,device = self.device,dtype = self.dtype))
         if self.central:
             if self.projection:
                 for i in range(sample_size):
