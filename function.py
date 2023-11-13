@@ -91,7 +91,7 @@ class robust_logistic(Function):
     if u is not None:
       # u はmu_k/sqrt{n} u
       def func(x_input):
-        return -self.__inner_projection_call__(x_input[0],x_input[1:],u=u)
+        return -self.__inner_projection_call__(x_input,u=u)
       def prox(x,t):
         return projection_ball2(x,t,r = self.delta)
       x0 = torch.zeros(u.shape[0]+1,device=X.device,dtype = X.dtype)
