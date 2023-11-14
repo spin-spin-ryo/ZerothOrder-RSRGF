@@ -36,10 +36,10 @@ delta = 0.01
 # sparsity = None
 
 
-lrs = [1,1e-1,1e-2]
+lrs = [1e+1,1,1e-1]
 solver_name = "proposed"
 projection = True
-reduced_dims = [100]
+reduced_dims = [50,10]
 heuristic_intervals = [None]
 sparsity = None
 

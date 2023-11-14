@@ -34,9 +34,9 @@ class proposed(__optim__):
                     g1 = self.func(self.xk + m,u= mu*U[i])
                     g2 = self.func(self.xk - m,u= mu*U[i])
                     if subspace_dir is None:
-                        subspace_dir = (g1 - g2)/(2*mu) * U[i]
+                        subspace_dir = (g1 - g2)/(2*mu) * U[i,1:]
                     else:
-                        subspace_dir += (g1 - g2)/(2*mu) * U[i]
+                        subspace_dir += (g1 - g2)/(2*mu) * U[i,1:]
             else:
                 for i in range(sample_size):
                     m = mu*P@U[i]
