@@ -90,13 +90,17 @@ class proposed(__optim__):
     
     def __iter_per__(self,i):
         self.__clear__()
+        torch.cuda.synchronize()
+        loss_start_time = time.time()
         loss = self.func(self.xk)
+        torch.cuda.synchronize()
+        self.loss_time += time.time() - loss_start_time
         dk = self.__direction__(loss)
         lr = self.__step__(i)
         self.__update__(lr*dk)
         torch.cuda.synchronize()
         self.__save_value__(i,fvalues = ("min",loss.item()),
-                time_values = ("max",time.time() - self.start_time),
+                time_values = ("max",time.time() - self.loss_time - self.start_time),
                 norm_dir = ("iter",torch.linalg.norm(dk).item()))
         return
  

@@ -17,31 +17,31 @@ bias = None
 ord = 1
 coef = 1e-7
 fused_flag = False
-data_name = "random"
+data_name = "news20"
 data_num = None
 epoch_num = None
 inner_iteration = 1000000
 subproblem_eps = 1e-7
-delta = 0.01
+delta = 1e-5
 
 # lrs = [8,7,6,5,4,3,2,1]
 # rate = 10
 # for i in range(len(lrs)):
 #     lrs[i] *= rate
-# lrs = [1e-4]
-# solver_name = "RGF"
-# projection = None
-# reduced_dims = [None]
-# heuristic_intervals = [None]
-# sparsity = None
-
-
-lrs = [1e+1,1,1e-1]
-solver_name = "proposed"
-projection = True
-reduced_dims = [50,10]
+lrs = [10]
+solver_name = "RGF"
+projection = None
+reduced_dims = [None]
 heuristic_intervals = [None]
 sparsity = None
+
+
+# lrs = [1e+4,1e+5]
+# solver_name = "proposed"
+# projection = True
+# reduced_dims = [100]
+# heuristic_intervals = [None]
+# sparsity = None
 
 mus = [1e-8]
 sample_sizes = [10]
