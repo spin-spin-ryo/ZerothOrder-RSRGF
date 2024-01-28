@@ -31,7 +31,9 @@ class proposed(__optim__):
             if self.projection:
                 for i in range(sample_size):
                     m = mu*P@U[i,1:]
+                    U[i,0] = torch.linalg.norm(self.xk + m)
                     g1 = self.func(self.xk + m,u= mu*U[i])
+                    U[i,0] = torch.linalg.norm(self.xk - m)
                     g2 = self.func(self.xk - m,u= mu*U[i])
                     if subspace_dir is None:
                         subspace_dir = (g1 - g2)/(2*mu) * U[i,1:]
