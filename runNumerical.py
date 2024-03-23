@@ -22,24 +22,26 @@ data_num = None
 epoch_num = None
 inner_iteration = 1000000
 subproblem_eps = 1e-7
-delta = 1e-5
+delta = 1e-3
 
-# lrs = [8,7,6,5,4,3,2,1]
-# rate = 10
-# for i in range(len(lrs)):
-#     lrs[i] *= rate
-lrs = [10]
-solver_name = "RGF"
-projection = None
-reduced_dims = [None]
-heuristic_intervals = [None]
-sparsity = None
+lrs = [9,8,7,6,5,4,3,2]
+rate = 1
+for i in range(len(lrs)):
+    lrs[i] *= rate
+
+# lrs = [10,100,1000,10000]
+
+# solver_name = "RGF"
+# projection = None
+# reduced_dims = [None]
+# heuristic_intervals = [None]
+# sparsity = None
 
 
-# lrs = [1e+4,1e+5]
+# lrs = [1e+6,1e+7,1e+8]
 # solver_name = "proposed"
 # projection = True
-# reduced_dims = [100]
+# reduced_dims = [10,50,100]
 # heuristic_intervals = [None]
 # sparsity = None
 
