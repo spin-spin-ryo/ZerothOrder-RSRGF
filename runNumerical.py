@@ -1,10 +1,28 @@
 import itertools
 import os
-from environments import CONFIGPATH
+from environments import CONFIGPATH,SHPATH
 import json
-from main import run,make_shfile
+from main import run
 import subprocess
 from utils import modifying_parameters
+
+def make_shfile(sh_file_name,**kwargs):
+  try:
+    config_name = kwargs["config"]
+  except:
+    config_name = "config.json"
+  
+  with open(os.path.join(SHPATH,sh_file_name),"w") as f:
+    f.write("#!/bin/sh\n")
+    f.write("#SBATCH -p v\n")
+    f.write("#SBATCH --gres=gpu:1\n")
+    f.write("#SBATCH -N 1\n")
+    f.write(f"#SBATCH -o /home/u00786/Research/optimization/outputs/{config_name}.out\n")
+    f.write("export PATH=/home/app/singularity-ce/bin:$PATH\n")
+    f.write(f"singularity exec --nv /home/u00786/Research/pytorch_latest.sif python /home/u00786/Research/optimization/main.py {os.path.join('auto',config_name)}\n")
+    f.write(f"mv {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'done',config_name)}")
+    f.close()
+
 
 split_sh = True
 
