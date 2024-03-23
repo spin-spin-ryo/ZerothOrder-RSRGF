@@ -4,8 +4,11 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 from summarizing.modify_json import find_files
+from matplotlib.ticker import ScalarFormatter
 
 SLASH = os.path.join("a","b")[1:-1]
+
+
 
 def get_dir_from_dict(prop_dict):
     output_path = ""
@@ -124,6 +127,14 @@ def plot_result(target_pathes,*args):
     xscale = ""
     yscale = ""
     full_line = 100
+    LABELFONTSIZE = 18
+    TICKLABELSIZE = 18
+    plt.rcParams["font.family"] = 'Times New Roman'
+    plt.rcParams["mathtext.fontset"] = 'stix'
+    plt.gca().xaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    plt.gca().yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    plt.gca().ticklabel_format(style="sci",scilimits=(0,0))
+    
     for target_path in target_pathes:
         labeled[target_path] = target_path
     
@@ -142,11 +153,17 @@ def plot_result(target_pathes,*args):
             full_line = v
         if k == "mode":
             mode = v
+        if k== "label_fontsize":
+            LABELFONTSIZE = v
+        if k == "tick_fontsize":
+            TICKLABELSIZE = v
         if k == "label":
             labeledflag = v
             for target_path in target_pathes:
                 if v:
                     solver_name = target_path.split(SLASH)[-2]
+                    if solver_name == "proposed":
+                        solver_name = "Proposed"
                     solver_param_dir = modify_dir_name(target_path.split(SLASH)[-1])
                     temp_solver_params = solver_param_dir.split("_")
                     solver_params = {}
@@ -154,7 +171,7 @@ def plot_result(target_pathes,*args):
                         param,value = params.split(";")
                         solver_params[param] = value
                     try:
-                        use_params ={"reduced dim":r"$d={}$".format(solver_params["reduced dim"])}
+                        use_params ={"reduced dim":"$d={}$".format(solver_params["reduced dim"])}
                     except:
                         use_params = {}
                     param_str = ""
@@ -163,7 +180,6 @@ def plot_result(target_pathes,*args):
                     labeled[target_path] = solver_name + param_str
                 
     
-
     for target_path in target_pathes:
         if mode == "best":
             fvalues_files = find_files(target_path,r"fvalues.*\.pth")
@@ -253,17 +269,16 @@ def plot_result(target_pathes,*args):
     if "time" in xscale:
         for index,(p,v,t) in enumerate(zip(target_pathes,fvalues,time_values)):
             print(p)
-            # start = 0　想定
             if end != -1:
                 index = t < end
             else:
-                index = torch.ones(len(t)).to(torch.bool)
+                index = torch.ones(len(t)).to(torch.bool)    
+            # start = 0　想定
             if "proposed" in p:
                 plt.plot(t[index][::full_line],v[index][::full_line],label = labeled[p])
             else:
                 plt.plot(t[index][::full_line],v[index][::full_line],label = labeled[p],linestyle = "dotted")
-        plt.xlabel("Time[s]")
-    
+        plt.xlabel("Time[s]",fontsize = LABELFONTSIZE)
     else:
         for index,(p,v) in enumerate(zip(target_pathes,fvalues)):
             print(p)
@@ -273,18 +288,25 @@ def plot_result(target_pathes,*args):
                 plt.plot(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line],label = labeled[p],linestyle = "dotted")
             if mode == "mean std":
                 plt.fill_between(np.arange(len(v))[start:end][::full_line],v[start:end][::full_line] + fvalues_std[index][start:end][::full_line],v[start:end][::full_line] - fvalues_std[index][start:end][::full_line],alpha = 0.15)
-        plt.xlabel("Iterations")
+        plt.xlabel("Iterations",fontsize = LABELFONTSIZE)
     
-    
+    plt.rc('font', size=TICKLABELSIZE)
     if not labeledflag:
-        plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0)
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=1,borderaxespad=0,fontsize = 18)
     else:
         plt.legend()
-    plt.ylabel(r"f(x)")
+    plt.ylabel(r'$f(x)$',fontsize = LABELFONTSIZE)
     if "log" in xscale:
         plt.xscale("log")
     if yscale == "log":
         plt.yscale("log")
+    
+    # plt.gca().yaxis.get_offset_text().set_fontsize(TICKLABELSIZE)
+    # plt.gca().xaxis.get_offset_text().set_fontsize(TICKLABELSIZE)
+    # plt.xticks(fontsize = TICKLABELSIZE)
+    # plt.yticks(fontsize = TICKLABELSIZE)
+
+    plt.tight_layout()
     plt.show()
     
 def add_name_all_dirs(add_char,init_dir,check = True):
