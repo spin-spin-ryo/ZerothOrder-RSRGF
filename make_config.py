@@ -1,6 +1,6 @@
 import itertools
 import os
-from environments import CONFIGPATH
+from environments import *
 import json
 from main import run
 import subprocess
@@ -8,7 +8,11 @@ from utils import modifying_parameters
 
 config_name = f"config.json"
   
-problem = "regularized robust logistic"
+problem = REGULARIZED+ROBUSTLOGISTIC
+solver_name = RSRGF
+
+
+
 property = None
 dim = None
 rank = None
@@ -25,12 +29,8 @@ subproblem_eps = 1e-7
 delta = 1e-3
 
 
-# solver_name = "RGF"
-# projection = None
-# lr = 1e-1
 
 lr = 1e-1
-solver_name = "proposed"
 projection = True
 reduced_dim = 10
 
@@ -45,8 +45,14 @@ trial_numbers = 1
 count = 0
 step_schedule = "constant"
 
-if __name__ == "__main__":      
-  config_json = {
+if __name__ == "__main__":     
+    config_json = {
+        "problem":problem,
+        "properties" : {},
+        "solver":solver_name,
+        "params":{}
+    }
+    all_config_json = {
       "problem":problem,
       "properties" : 
       {
@@ -80,7 +86,24 @@ if __name__ == "__main__":
       "iterations":iterations,
       "interval":interval,
       "trial_numbers":trial_numbers
-  }
-  with open(os.path.join(CONFIGPATH,config_name),"w") as f:
-      json.dump(config_json,f,indent=4)
-      f.close()
+    }
+    
+    if REGULARIZED in problem:
+        problem_without_regularized = problem.replace(REGULARIZED,"")
+    else:
+        problem_without_regularized = problem
+    
+    for key in OBJECTIVE_PARAMS_KEY[problem_without_regularized]:
+        config_json["properties"][key] = all_config_json["properties"][key]
+    
+    if REGULARIZED in problem:
+        for key in OBJECTIVE_PARAMS_KEY[REGULARIZED]:
+            config_json["properties"][key] = all_config_json["properties"][key]
+    
+    for key in ALGORITHM_PARAMS_KEY[solver_name]:
+        config_json["params"][key] = all_config_json["params"][key]
+    
+    
+    with open(os.path.join(CONFIGPATH,config_name),"w") as f:
+        json.dump(config_json,f,indent=4)
+        f.close()
