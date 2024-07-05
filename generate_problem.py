@@ -150,25 +150,34 @@ def generate_quadratic(properties):
     return f,x0
 
 def generate_logistic(properties):
-    dim = properties["dim"]
-    data_num = properties["data-num"]
-    savepath = os.path.join(DATAPATH,"logistic")
-    filename_A = f"A_{dim}_{data_num}.pth"
-    filename_b = f"b_{dim}_{data_num}.pth"
-    filename_x0 = f"x0_{dim}_{data_num}.pth"
-    if os.path.exists(os.path.join(savepath,filename_A)):
-        A = torch.load(os.path.join(savepath,filename_A))
-        b = torch.load(os.path.join(savepath,filename_b))
-        x0 = torch.load(os.path.join(savepath,filename_x0))
+    data_path = "./data/logistic/data.pth"
+    label_path = "./data/logistic/label.pth"   
+    init_path =  "./data/logistic/init_param.pth"
+    data_num = 1000
+    feature_num = 100000
+    sparsity = 0.1
+    if os.path.exists(data_path):
+        X = torch.load(data_path)
+        y = torch.load(label_path)
+        x0 = torch.load(init_path)
     else:
-        os.makedirs(savepath,exist_ok=True)
-        A = torch.randn(data_num,dim)
-        b = generate_zeroone(data_num)
-        x0 = torch.randn(dim)*10
-        torch.save(A,os.path.join(savepath,filename_A))
-        torch.save(b,os.path.join(savepath,filename_b))
-        torch.save(x0,os.path.join(savepath,filename_x0))
-    params = [A,b]
+        X = generate_sparse_random_matrix(data_num=data_num,
+                                          feature_num=feature_num,
+                                          sparsity=sparsity)
+        # Generate 1, -1 matrix
+        x0 = torch.randn(feature_num)
+        indices = torch.zeros((2, data_num)).to(torch.int64)
+        indices[0] = torch.arange(data_num)
+        values = torch.ones(data_num)
+        values[data_num//2:] = -1
+        sparse_matrix = torch.sparse.FloatTensor(indices, values, torch.Size([data_num, feature_num]))
+        X = X + sparse_matrix
+        y = torch.ones(data_num)
+        y[data_num//2:] = -1
+        torch.save(X,data_path)
+        torch.save(y,label_path)
+        torch.save(x0,init_path)
+    params = [X,y]
     f = logistic(params)
     return f,x0
 
@@ -286,8 +295,7 @@ def generate_softmax(properties):
         _,class_num = y.shape
         dim = feature_num*class_num + class_num
         x0 = torch.zeros(dim)
-    elif data_name == "random":
-        return
+        
     params = [X,y]
     f = softmax(params)
     return f,x0

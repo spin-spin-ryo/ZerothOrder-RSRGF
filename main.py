@@ -118,10 +118,10 @@ def make_shfile(sh_file_name,**kwargs):
     f.write("#SBATCH -p v\n")
     f.write("#SBATCH --gres=gpu:1\n")
     f.write("#SBATCH -N 1\n")
-    f.write(f"#SBATCH -o /home/u00786/Research/optimization/outputs/{config_name}.out\n")
+    f.write(f"#SBATCH -o /home/u00786/Research/nonsmooth/outputs/{config_name}.out\n")
     f.write("export PATH=/home/app/singularity-ce/bin:$PATH\n")
-    f.write(f"singularity exec --nv /home/u00786/Research/pytorch_latest.sif python /home/u00786/Research/optimization/main.py {os.path.join('auto',config_name)}\n")
-    f.write(f"mv {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'done',config_name)}")
+    f.write(f"singularity exec --nv /home/u00786/Research/pytorch_latest.sif python /home/u00786/Research/nonsmooth/main.py {os.path.join('auto',config_name)}\n")
+    f.write(f"mv {os.path.join('/home/u00786/Research/nonsmooth',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/nonsmooth',CONFIGPATH,'done',config_name)}")
     f.close()
 
 

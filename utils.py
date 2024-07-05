@@ -95,3 +95,29 @@ def modifying_parameters(solver_name,reduced_dims,heuristic_intervals,sparsity,p
    
    return reduced_dims,heuristic_intervals,sparsity,projection
             
+def generate_sparse_random_matrix(data_num, feature_num, sparsity=0.1):
+    """
+    Generates a sparse random matrix of size (data_num, feature_num).
+
+    Parameters:
+    - data_num (int): Number of rows of the matrix.
+    - feature_num (int): Number of columns of the matrix.
+    - sparsity (float): Proportion of elements that are non-zero (default is 0.1).
+
+    Returns:
+    - sparse_matrix (torch.sparse.FloatTensor): A sparse random matrix.
+    """
+    # Calculate the number of non-zero elements
+    num_nonzeros = int(data_num * feature_num * sparsity)
+    
+    # Generate random indices for non-zero elements
+    indices = torch.randint(0, data_num, (2, num_nonzeros))
+    indices[1] = torch.randint(0, feature_num, (num_nonzeros,))
+    
+    # Generate random values for the non-zero elements
+    values = torch.randn(num_nonzeros)
+    
+    # Create the sparse matrix
+    sparse_matrix = torch.sparse.FloatTensor(indices, values, torch.Size([data_num, feature_num]))
+    
+    return sparse_matrix

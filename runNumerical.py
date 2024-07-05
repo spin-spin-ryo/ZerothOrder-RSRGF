@@ -8,29 +8,28 @@ from utils import modifying_parameters
 
 split_sh = True
 
-problem = "regularized robust logistic"
+problem = "regularized Logistic"
 property = None
 dim = None
 rank = None
 subspace = None
 bias = None
 ord = 1
-coef = 1e-7
+coef = 1e-6
 fused_flag = False
-data_name = "news20"
+data_name = None
 data_num = None
 epoch_num = None
-inner_iteration = 1000000
-subproblem_eps = 1e-7
-delta = 1e-3
+inner_iteration = 0
+subproblem_eps = 0
+delta = 0
 
-lrs = [9,8,7,6,5,4,3,2]
-rate = 1
-for i in range(len(lrs)):
-    lrs[i] *= rate
+# lrs = [9,8,7,6,5,4,3,2]
+# rate = 1
+# for i in range(len(lrs)):
+#     lrs[i] *= rate
 
-# lrs = [10,100,1000,10000]
-
+# lrs = [1e-4,1e-3,1e-2,1e-1]
 # solver_name = "RGF"
 # projection = None
 # reduced_dims = [None]
@@ -38,20 +37,20 @@ for i in range(len(lrs)):
 # sparsity = None
 
 
-# lrs = [1e+6,1e+7,1e+8]
-# solver_name = "proposed"
-# projection = True
-# reduced_dims = [10,50,100]
-# heuristic_intervals = [None]
-# sparsity = None
+lrs = [1,10,100,1000]
+solver_name = "proposed"
+projection = False
+reduced_dims = [10,50,100]
+heuristic_intervals = [None]
+sparsity = None
 
 mus = [1e-8]
-sample_sizes = [10]
+sample_sizes = [1]
 central = True
 
 
-iterations =10000
-interval = 10
+iterations =100000
+interval = 100
 trial_numbers = 1
 count = 0
 step_schedule = "constant"
