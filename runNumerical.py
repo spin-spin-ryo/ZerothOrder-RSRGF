@@ -2,34 +2,56 @@ import itertools
 import os
 from environments import CONFIGPATH
 import json
-from main import run,make_shfile
+from main import run
 import subprocess
 from utils import modifying_parameters
 
+SHPATH = "./shfiles"
+
+
+def make_shfile(sh_file_name,**kwargs):
+  try:
+    config_name = kwargs["config"]
+  except:
+    config_name = "config.json"
+  
+  with open(os.path.join(SHPATH,sh_file_name),"w") as f:
+    f.write("#!/bin/sh\n")
+    f.write("#SBATCH -p v\n")
+    f.write("#SBATCH --gres=gpu:1\n")
+    f.write("#SBATCH -N 1\n")
+    f.write(f"#SBATCH -o /home/u00786/Research/optimization/outputs/{config_name}.out\n")
+    f.write("export PATH=/home/app/singularity-ce/bin:$PATH\n")
+    f.write(f"singularity exec --nv /home/u00786/Research/pytorch_latest.sif python /home/u00786/Research/optimization/main.py {os.path.join('auto',config_name)}\n")
+    f.write(f"mv {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/optimization',CONFIGPATH,'done',config_name)}")
+    f.close()
+
+
 split_sh = True
 
-problem = "regularized Logistic"
+problem = "regularized robust logistic"
 property = None
 dim = None
 rank = None
 subspace = None
 bias = None
 ord = 1
-coef = 1e-6
+coef = 1e-7
 fused_flag = False
-data_name = None
+data_name = "news20"
 data_num = None
 epoch_num = None
-inner_iteration = 0
-subproblem_eps = 0
-delta = 0
+inner_iteration = 1000000
+subproblem_eps = 1e-7
+delta = 1e-3
 
-# lrs = [9,8,7,6,5,4,3,2]
-# rate = 1
-# for i in range(len(lrs)):
-#     lrs[i] *= rate
+lrs = [9,8,7,6,5,4,3,2]
+rate = 1
+for i in range(len(lrs)):
+    lrs[i] *= rate
 
-# lrs = [1e-4,1e-3,1e-2,1e-1]
+# lrs = [10,100,1000,10000]
+
 # solver_name = "RGF"
 # projection = None
 # reduced_dims = [None]
@@ -37,20 +59,20 @@ delta = 0
 # sparsity = None
 
 
-lrs = [1,10,100,1000]
+lrs = [1e+6,1e+7,1e+8]
 solver_name = "proposed"
-projection = False
+projection = True
 reduced_dims = [10,50,100]
 heuristic_intervals = [None]
 sparsity = None
 
 mus = [1e-8]
-sample_sizes = [1]
+sample_sizes = [10]
 central = True
 
 
-iterations =100000
-interval = 100
+iterations =10000
+interval = 10
 trial_numbers = 1
 count = 0
 step_schedule = "constant"
