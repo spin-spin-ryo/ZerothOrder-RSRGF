@@ -1,73 +1,44 @@
 import torch
 import os
-from environments import DATAPATH
+from environments import *
 from utils import *
 from function import *
 import pickle
 
 
 def generate(mode,properties):
-    if mode == "test":
+    if mode == TEST:
         f ,x0 = generate_test(properties)
-    elif mode == "Quadratic":
+    elif mode == QUADRATIC:
         f,x0 = generate_quadratic(properties)
-    elif mode == "max-linear":
+    elif mode == MAXLINEAR:
         f,x0 = generate_max_linear(properties)
-    elif mode == "piecewise-linear":
+    elif mode == PIECEWISELINEAR:
         dim = int(properties["dim"])
         f = piecewise_linear()
         x0 = torch.zeros(dim)
-    elif mode == "subspace-norm":
+    elif mode == SUBSPACENORM:
         f,x0 = generate_subspace(properties)
-    elif mode == "subspace-norm local":
+    elif mode == SUBSPACENORM_LOCAL:
         f,x0 = generate_subspace(properties,local = True)
-    elif mode == "LinearRegression":
+    elif mode == LINEARREGRESSION:
         f,x0 = generate_LinearRegression(properties)
-    elif mode == "NMF":
+    elif mode == NONNEGATIVEMATRIXFACTRIZATION:
         f,x0 = generate_nmf(properties)
-    elif mode == "softmax":
+    elif mode == SOFTMAX:
         f,x0 = generate_softmax(properties)
-    elif mode == "regularized softmax":
-        f,x0 = generate_softmax(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized LinearRegression":
-        f,x0 = generate_LinearRegression(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized NMF":
-        f,x0 = generate_nmf(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized test":
-        f ,x0 = generate_test(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized test local":
-        f ,x0 = generate_test(properties,local = True)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized Quadratic":
-        f,x0 = generate_quadratic(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized Logistic":
-        f,x0 = generate_logistic(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized LinearRegression local":
-        f,x0 = generate_LinearRegression(properties,local = True)
-        f = generate_regularized(f,properties)
-    elif mode == "regularized NMF local":
-        f,x0 = generate_nmf(properties,local = True)
-        f = generate_regularized(f,properties)
-    elif mode == "adverserial attack":
+    elif mode == ADVERSERIALATTACK:
         f,x0 = generate_adverserial(properties)
-    elif mode == "robust adversarial":
+    elif mode == ROBUSTADVERSARIAL:
         f,x0 = generate_robust_adversarial(properties)
-    elif mode == "regularized robust adversarial":
-        f,x0 = generate_robust_adversarial(properties)
-        f = generate_regularized(f,properties)
-    elif mode == "robust logistic":
+    elif mode == ROBUSTLOGISTIC:
         f,x0 = generate_robust_logistic(properties)
-    elif mode == "regularized robust logistic":
-        f,x0 = generate_robust_logistic(properties)
-        f = generate_regularized(f,properties,projection=True)
     else:
         raise ValueError("No functions.")
+    
+    if REGULARIZED in mode:
+        f = generate_regularized(f,properties)
+    
     return f,x0
 
 def generate_max_linear(properties):

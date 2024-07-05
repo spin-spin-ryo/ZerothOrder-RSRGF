@@ -165,7 +165,8 @@ results/
 outputs/
 configs/
 *.sh
-/environments.py
+download_result.py
+runNumerical.py
 shfiles/
 
 *.pth

@@ -107,23 +107,6 @@ def run(config_name,save_solution = False):
   plt.savefig(os.path.join(savepath,"result.pdf"))
   plt.close()
   
-def make_shfile(sh_file_name,**kwargs):
-  try:
-    config_name = kwargs["config"]
-  except:
-    config_name = "config.json"
-  
-  with open(os.path.join(SHPATH,sh_file_name),"w") as f:
-    f.write("#!/bin/sh\n")
-    f.write("#SBATCH -p v\n")
-    f.write("#SBATCH --gres=gpu:1\n")
-    f.write("#SBATCH -N 1\n")
-    f.write(f"#SBATCH -o /home/u00786/Research/nonsmooth/outputs/{config_name}.out\n")
-    f.write("export PATH=/home/app/singularity-ce/bin:$PATH\n")
-    f.write(f"singularity exec --nv /home/u00786/Research/pytorch_latest.sif python /home/u00786/Research/nonsmooth/main.py {os.path.join('auto',config_name)}\n")
-    f.write(f"mv {os.path.join('/home/u00786/Research/nonsmooth',CONFIGPATH,'auto',config_name)} {os.path.join('/home/u00786/Research/nonsmooth',CONFIGPATH,'done',config_name)}")
-    f.close()
-
 
 if __name__ == "__main__":
   import sys
